@@ -1,0 +1,35 @@
+<idea-plugin>
+    <id>ru.testit.testit.management</id>
+    <name>Test IT Management</name>
+    <vendor url="https://testit.software">Test IT</vendor>
+    <description>The Test IT Management plugin is a powerful tool for managing test cases. It provides an ability to
+        browse work items hierarchies, generate unit tests for selected scenarios.
+    </description>
+    <depends>com.intellij.modules.platform</depends>
+    <resource-bundle>messages.TmsBundle</resource-bundle>
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService
+                serviceImplementation="ru.testit.management.windows.settings.TmsSettingsState"/>
+        <applicationConfigurable
+                id="ru.testit.management.Settings"
+                parentId="tools"
+                instance="ru.testit.management.windows.settings.TmsSettingsFactory"
+                displayName="Test IT"/>
+        <toolWindow
+                id="Test IT"
+                factoryClass="ru.testit.management.windows.tools.TmsToolFactory"
+                icon="/icons/tool_window/toolWindow.svg"
+                anchor="right"
+                secondary="false"/>
+    </extensions>
+    <actions>
+        <action id="ru.testit.management.OpenSettingsAction"
+                class="ru.testit.management.actions.OpenSettingsAction"
+                icon="AllIcons.General.Settings"
+                text="Test IT Settings"/>
+        <action id="ru.testit.management.SyncProjectAction"
+                class="ru.testit.management.actions.SyncProjectAction"
+                icon="AllIcons.Actions.Refresh"
+                text="Refresh Test IT Data"/>
+    </actions>
+</idea-plugin>
