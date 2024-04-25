@@ -24,7 +24,7 @@ the [releases](https://github.com/testit-tms/testit-management/releases) page.
 
 ```json
 {
-  "Url": "/Users/user01/Documents/importer",
+  "Url": "https://team-okp8.testit.software/",
   "Project Id": "3a651dfc-51a9-49aa-a8ee-0e50a6efcf36",
   "Private Token": "b241M2s1N1VrRUhwYTNLaWZP"
 }
