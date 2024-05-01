@@ -8,7 +8,6 @@ testit-common = "2.2.4"
 
 # plugins
 kotlin = "1.9.23"
-changelog = "2.2.0"
 intellij = "1.17.3"
 
 [libraries]
@@ -19,6 +18,5 @@ testit-api = { group = "ru.testit", name = "testit-api-client", version.ref = "t
 testit-common = { group = "ru.testit", name = "testit-java-commons", version.ref = "testit-common" }
 
 [plugins]
-changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 intellij = { id = "org.jetbrains.intellij", version.ref = "intellij" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

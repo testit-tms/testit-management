@@ -1,11 +1,8 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.changelog.Changelog
-import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    alias(libs.plugins.changelog)
     alias(libs.plugins.intellij)
     alias(libs.plugins.kotlin)
 }
@@ -31,16 +28,6 @@ dependencies {
     testCompileOnly(libs.testit.common)
 }
 
-changelog {
-    itemPrefix.set("-")
-    keepUnreleasedSection.set(true)
-    unreleasedTerm.set("[Unreleased]")
-    groups.set(setOf("Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"))
-    lineSeparator.set(System.lineSeparator())
-    combinePreReleases.set(true)
-    repositoryUrl = properties("pluginRepositoryUrl")
-}
-
 intellij {
     pluginName = properties("pluginName")
     version = properties("platformVersion")
@@ -64,33 +51,6 @@ tasks {
         version = properties("pluginVersion")
         sinceBuild = properties("pluginSinceBuild")
         untilBuild = properties("pluginUntilBuild")
-
-        pluginDescription = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
-            val start = "<!-- Plugin description -->"
-            val end = "<!-- Plugin description end -->"
-
-            with(it.lines()) {
-                val lineSeparator = System.lineSeparator()
-
-                if (!containsAll(setOf(start, end))) {
-                    throw GradleException("Plugin description section not found in README.md:$lineSeparator$start ... $end")
-                }
-                subList(indexOf(start) + 1, indexOf(end)).joinToString(lineSeparator).let(::markdownToHTML)
-            }
-        }
-
-        val changelog = project.changelog
-
-        changeNotes = properties("pluginVersion").map { pluginVersion ->
-            with(changelog) {
-                renderItem(
-                    (getOrNull(pluginVersion) ?: getUnreleased())
-                        .withHeader(false)
-                        .withEmptySections(false),
-                    Changelog.OutputType.HTML,
-                )
-            }
-        }
     }
 
     publishPlugin {
