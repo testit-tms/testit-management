@@ -4,29 +4,14 @@ on:
     branches: [ main ]
   pull_request:
 
-permissions:
-  contents: read
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
 
-  draft-release:
-    name: Draft release
-    permissions:
-      contents: write
-      pull-requests: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: release-drafter/release-drafter@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   build:
     name: Build
-    needs: [ draft-release ]
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.properties.outputs.version }}
@@ -76,22 +61,22 @@ jobs:
 
           echo "filename=${FILENAME:0:-4}" >> $GITHUB_OUTPUT
 
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact.outputs.filename }}
           path: ./build/distributions/content/*/*
 
-      - name: Upload Release Asset
+      - name: Create Draft Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd  ${{ github.workspace }}/build/distributions
-          ls -R
-          gh release upload --clobber "v${{ needs.build.outputs.version }}" "${{ steps.artifact.outputs.filename }}.zip"
+          gh api repos/{owner}/{repo}/releases --jq '.[] | select(.draft == true) | .id' | xargs -I '{}' gh api -X DELETE repos/{owner}/{repo}/releases/{}
+          gh release create "v${{ needs.build.outputs.version }}" --draft --title "v${{ needs.build.outputs.version }}"
+          gh release upload "v${{ needs.build.outputs.version }}" ${{ github.workspace }}/build/distributions/${{ steps.artifact.outputs.filename }}.zip
 
   verify:
-    name: Verify plugin
+    name: Verify Plugin
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
