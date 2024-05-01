@@ -14,7 +14,7 @@ concurrency:
 jobs:
 
   draft-release:
-    name: Draft Release
+    name: Draft release
     permissions:
       contents: write
       pull-requests: write
@@ -55,8 +55,12 @@ jobs:
         shell: bash
         run: |
           chmod +x ./gradlew
-          echo "pluginVerifierHomeDir=~/.pluginVerifier" >> $GITHUB_OUTPUT
+          PROPERTIES="$(./gradlew properties --console=plain -q)"
+          VERSION="$(echo "$PROPERTIES" | grep "^version:" | cut -f2- -d ' ')"
 
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "pluginVerifierHomeDir=~/.pluginVerifier" >> $GITHUB_OUTPUT
+          
           ./gradlew listProductsReleases
 
       - name: Build plugin
@@ -81,7 +85,10 @@ jobs:
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ steps.artifact.outputs.filename }}.zip
+        run: |
+          cd  ${{ github.workspace }}/build/distributions
+          ls -R
+          gh release upload --clobber v${{ needs.build.outputs.version }}  ${{ steps.artifact.outputs.filename }}.zip
 
   verify:
     name: Verify plugin
