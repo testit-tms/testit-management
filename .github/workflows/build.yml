@@ -14,7 +14,7 @@ concurrency:
 jobs:
 
   draft-release:
-    name: Draft Release
+    name: Draft release
     permissions:
       contents: write
       pull-requests: write
@@ -81,7 +81,10 @@ jobs:
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ steps.artifact.outputs.filename }}.zip
+        run: |
+          cd  ${{ github.workspace }}/build/distributions
+          ls -R
+          gh release upload Test IT Management-1.0.3.zip
 
   verify:
     name: Verify plugin
