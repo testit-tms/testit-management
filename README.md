@@ -11,7 +11,6 @@ project's work items and hierarchies, generate unit tests for selected work item
 ## Download
 
 You can download the latest version of the Test IT Management plugin from
-the [marketplace](https://plugins.jetbrains.com/plugin/24232-test-it-management) or from
 the [releases](https://github.com/testit-tms/testit-management/releases) page.
 
 ## Setup
