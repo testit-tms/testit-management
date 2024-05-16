@@ -43,6 +43,10 @@ kotlin {
 }
 
 tasks {
+    wrapper {
+        gradleVersion = properties("gradleVersion").get()
+    }
+
     buildSearchableOptions {
         enabled = false
     }
@@ -94,8 +98,12 @@ tasks {
             "java.util.logging.manager",
             "java.util.logging.LogManager"
         )
+        systemProperty(
+            "TEST_CI",
+            System.getProperty("testCi")
+        )
         reports {
-            html.required.set(false)
+            html.required.set(true)
             junitXml.required.set(false)
         }
         testLogging {
