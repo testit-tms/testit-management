@@ -58,6 +58,8 @@ class TmsMouseListener(project: Project, tree: JTree) : MouseListener {
         descriptor?.let {
             FileEditorManager.getInstance(_project).openTextEditor(it, true)
         }
+
+        descriptor?.dispose()
     }
 
     private fun showPopup(event: MouseEvent) {
