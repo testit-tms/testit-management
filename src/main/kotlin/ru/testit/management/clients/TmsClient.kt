@@ -4,10 +4,10 @@ import ru.testit.client.api.ProjectSectionsApi
 import ru.testit.client.api.ProjectsApi
 import ru.testit.client.api.WorkItemsApi
 import ru.testit.client.invoker.ApiClient
-import ru.testit.client.model.ApiV2ProjectsProjectIdWorkItemsSearchPostRequest
 import ru.testit.client.model.SectionModel
+import ru.testit.client.model.WorkItemFilterModel
 import ru.testit.client.model.WorkItemModel
-import ru.testit.client.model.WorkItemSelectModelFilter
+import ru.testit.client.model.WorkItemSelectModel
 import ru.testit.management.utils.MessagesUtils
 import ru.testit.management.windows.settings.TmsSettingsState
 import java.util.*
@@ -78,11 +78,11 @@ object TmsClient {
             return workItems
         }
 
-        val filter = WorkItemSelectModelFilter()
+        val filter = WorkItemFilterModel()
         filter.sectionIds = setOf(sectionId)
         filter.isDeleted = false
 
-        val request = ApiV2ProjectsProjectIdWorkItemsSearchPostRequest()
+        val request = WorkItemSelectModel()
         request.filter = filter
 
         try {
