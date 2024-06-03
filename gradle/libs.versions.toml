@@ -7,7 +7,7 @@ testit-api = "latest.release"
 testit-common = "latest.release"
 
 # plugins
-kotlin = "1.9.23"
+kotlin = "2.0.0"
 intellij = "1.17.3"
 
 [libraries]
