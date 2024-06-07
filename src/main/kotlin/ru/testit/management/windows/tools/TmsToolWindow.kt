@@ -120,7 +120,7 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
                     getChildTreeNode(
                         section,
                         project,
-                        sections.filter { s -> persistentListOf(parentSection.id, section.id).contains(s.id) }
+                        sections
                     )
                 )
             }
