@@ -30,12 +30,10 @@ jobs:
       # Setup Gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-home-cache-cleanup: true
 
       # Build plugin
       - name: Build Plugin
-        run: ./gradlew buildPlugin
+        run: ./gradlew buildPlugin --no-build-cache --no-configuration-cache
 
       - name: Upload Release Asset
         env:
