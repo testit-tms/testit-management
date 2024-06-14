@@ -102,12 +102,7 @@ class TmsSettingsWindow {
         }
 
         errorMsg = TmsClient.getSettingsValidationErrorMsg(projectId.orEmpty(), privateToken, url.orEmpty())
-
-        if (errorMsg == null) {
-            verifyLabel?.text = MessagesUtils.get("window.settings.validation.success.text")
-        } else {
-            verifyLabel?.text = errorMsg
-        }
+        verifyLabel?.text = errorMsg ?: MessagesUtils.get("window.settings.validation.success.text")
     }
 
     private fun getUrlValidationErrorMsg(url: String?): String? {

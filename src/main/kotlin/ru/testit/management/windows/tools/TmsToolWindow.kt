@@ -10,7 +10,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
-import kotlinx.collections.immutable.persistentListOf
 import org.jdesktop.swingx.JXTree
 import ru.testit.client.model.SectionModel
 import ru.testit.management.clients.TmsClient

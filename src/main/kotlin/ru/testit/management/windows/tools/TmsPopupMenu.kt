@@ -19,7 +19,6 @@ class TmsPopupMenu(tree: JTree) : JBPopupMenu() {
 
         addCopyAction(copyItem, tree)
         add(copyItem)
-        //addSeparator()
     }
 
     private fun addCopyAction(item: JMenuItem, tree: JTree) {

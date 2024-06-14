@@ -3,6 +3,7 @@ package ru.testit.management.windows.tools
 import ru.testit.client.model.WorkItemEntityTypes
 import ru.testit.management.icons.TmsIcons
 import java.awt.Component
+import javax.swing.Icon
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeCellRenderer
@@ -31,45 +32,67 @@ class TmsCellStyle : DefaultTreeCellRenderer() {
 
         when {
             globalId == null && expanded -> {
+                this.icon = openIcon
                 this.text = name
             }
 
-            globalId == null && !expanded -> {
+            globalId == null -> {
                 this.icon = closedIcon
                 this.text = name
             }
 
             else -> {
-                when (model.entityTypeName) {
-                    WorkItemEntityTypes.CHECKLISTS -> {
-                        if (model.isAutomated) {
-                            this.icon = TmsIcons.CheckListAutomated
-                        } else {
-                            this.icon = TmsIcons.CheckList
-                        }
-                    }
-
-                    WorkItemEntityTypes.SHAREDSTEPS -> {
-                        if (model.isAutomated) {
-                            this.icon = TmsIcons.SharedStepAutomated
-                        } else {
-                            this.icon = TmsIcons.SharedStep
-                        }
-                    }
-
-                    else -> {
-                        if (model.isAutomated) {
-                            this.icon = TmsIcons.TestCaseAutomated
-                        } else {
-                            this.icon = TmsIcons.TestCase
-                        }
-                    }
-                }
-
+                setWorkItemIcon(model)
                 this.text = "<html><i>$globalId</i> $name</html>"
             }
         }
 
         return this
+    }
+
+    private fun setWorkItemIcon(model: TmsNodeModel) {
+        when (model.entityTypeName) {
+            WorkItemEntityTypes.CHECKLISTS -> {
+                this.icon = getCheckListIcon(model.isAutomated)
+            }
+
+            WorkItemEntityTypes.SHAREDSTEPS -> {
+                this.icon = getSharedStepIcon(model.isAutomated)
+            }
+
+            else -> {
+                this.icon = getTestCaseIcon(model.isAutomated)
+            }
+        }
+    }
+
+    private fun getCheckListIcon(isAutomated: Boolean): Icon {
+        val checkListIcon = if (isAutomated) {
+            TmsIcons.CheckListAutomated
+        } else {
+            TmsIcons.CheckList
+        }
+
+        return checkListIcon
+    }
+
+    private fun getSharedStepIcon(isAutomated: Boolean): Icon {
+        val sharedStepIcon = if (isAutomated) {
+            TmsIcons.SharedStepAutomated
+        } else {
+            TmsIcons.SharedStep
+        }
+
+        return sharedStepIcon
+    }
+
+    private fun getTestCaseIcon(isAutomated: Boolean): Icon {
+        val testCaseIcon = if (isAutomated) {
+            TmsIcons.TestCaseAutomated
+        } else {
+            TmsIcons.TestCase
+        }
+
+        return testCaseIcon
     }
 }
