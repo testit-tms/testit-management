@@ -25,11 +25,13 @@ object TmsClient {
             client = getNewApiClient(url, privateToken)
             val project = ProjectsApi(client).getProjectById(projectId)
 
-            return if (project == null) {
+            val errorMessage = if (project == null) {
                 MessagesUtils.get("api.validation.project.null.text")
             } else {
                 null
             }
+
+            return errorMessage
         } catch (exception: Throwable) {
             return String.format(
                 MessagesUtils.get("api.validation.project.error.text"),
