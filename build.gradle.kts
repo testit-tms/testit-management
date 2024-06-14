@@ -90,10 +90,14 @@ tasks {
     }
 
     withType<Test>().configureEach {
-        systemProperty(
-            "java.util.logging.config.file",
-            sourceSets.main.get().resources.find { it.name.endsWith("logging.properties") } as File
-        )
+        val logPropsFile = sourceSets.main.get().resources.find {
+            it.name.endsWith("logging.properties")
+        } as File
+
+        if (logPropsFile.exists()) {
+            systemProperty("java.util.logging.config.file", logPropsFile)
+        }
+
         systemProperty(
             "java.util.logging.manager",
             "java.util.logging.LogManager"
