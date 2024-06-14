@@ -21,13 +21,6 @@ jobs:
       pluginVerifierHomeDir: ${{ steps.properties.outputs.pluginVerifierHomeDir }}
     steps:
 
-      # Free GitHub Actions Environment Disk Space
-      - name: Maximize Build Space
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          large-packages: false
-
       # Check out current repository
       - name: Fetch Sources
         uses: actions/checkout@v4
@@ -121,6 +114,13 @@ jobs:
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
+
+      # Free GitHub Actions Environment Disk Space
+      - name: Maximize Build Space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          large-packages: false
 
       # Check out current repository
       - name: Fetch Sources
