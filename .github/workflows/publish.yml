@@ -8,7 +8,7 @@ jobs:
 
   # Prepare and publish the plugin
   release:
-    name: Publish Plugin
+    name: Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -34,7 +34,7 @@ jobs:
           gradle-home-cache-cleanup: true
 
       # Build plugin
-      - name: Build plugin
+      - name: Build Plugin
         run: ./gradlew buildPlugin
 
       - name: Upload Release Asset

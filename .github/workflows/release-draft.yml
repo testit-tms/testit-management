@@ -1,13 +1,17 @@
-name: "Create draft release"
+name: Draft
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  update_draft_release:
+
+  update:
+    name: Update
     runs-on: ubuntu-latest
     steps:
-      - uses: release-drafter/release-drafter@v5
+
+      - name: Update Draft Release
+        uses: release-drafter/release-drafter@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

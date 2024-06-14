@@ -55,7 +55,7 @@ jobs:
           ./gradlew listProductsReleases # prepare list of IDEs for Plugin Verifier
 
       # Build plugin
-      - name: Build plugin
+      - name: Build Plugin
         run: ./gradlew buildPlugin
 
       # Prepare plugin archive content for creating artifact
@@ -70,7 +70,7 @@ jobs:
           echo "filename=${FILENAME:0:-4}" >> $GITHUB_OUTPUT
 
       # Store already-built plugin as an artifact for downloading
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact.outputs.filename }}
@@ -114,7 +114,7 @@ jobs:
 
   # Run plugin structure verification along with IntelliJ Plugin Verifier
   verify:
-    name: Verify plugin
+    name: Verify
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
@@ -151,7 +151,7 @@ jobs:
           key: plugin-verifier-${{ hashFiles('build/listProductsReleases.txt') }}
 
       # Run Verify Plugin task and IntelliJ Plugin Verifier tool
-      - name: Run Plugin Verification tasks
+      - name: Run Plugin Verification Tasks
         run: ./gradlew runPluginVerifier -Dplugin.verifier.home.dir=${{ needs.build.outputs.pluginVerifierHomeDir }}
 
       # Collect Plugin Verifier Result
