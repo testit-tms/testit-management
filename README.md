@@ -8,6 +8,13 @@ project's work items and hierarchies, generate unit tests for selected work item
 >
 > Click the <kbd>Watch</kbd> button on the top to be notified about releases containing new features and fixes.
 
+## Compatibility
+
+| Test IT | Plugin Test IT Management |
+|---------|---------------------------|
+| 4.6     | 1.0.1                     | 
+| 5.0     | 1.0.7+                    | 
+
 ## Download
 
 You can download the latest version of the Test IT Management plugin from
