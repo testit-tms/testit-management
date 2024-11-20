@@ -1,6 +1,7 @@
 package ru.testit.management.windows.settings
 
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.Cell
@@ -8,6 +9,7 @@ import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import ru.testit.management.clients.TmsClient
 import ru.testit.management.utils.MessagesUtils
+import java.awt.event.ItemEvent
 import java.net.URL
 import java.util.*
 import javax.swing.JLabel
@@ -17,6 +19,7 @@ class TmsSettingsWindow {
     val panel: DialogPanel
 
     var projectId: Cell<JBTextField>? = null
+    var frameworkComboBox: Cell<ComboBox<String>>? = null
     var privateToken: Cell<JBTextField>? = null
     var url: Cell<JBTextField>? = null
         get() = getValidUrl(field)
@@ -63,6 +66,19 @@ class TmsSettingsWindow {
                             "window.settings.group.connection.verify.label.end.text"
                         )
                     )
+                }
+            }
+            groupRowsRange("Settings") {
+                row("Framework") {
+                    val options = listOf("junit", "pytest")
+                    frameworkComboBox = comboBox<String>(options)
+                    frameworkComboBox!!.component.selectedItem = _state.getFramework()
+                        // .bindItem(_state::getFrameworkString, _state::setFrameworkString)
+                    frameworkComboBox!!.component.addItemListener {
+                        if (it.stateChange == ItemEvent.SELECTED) run {
+                            _state.setFramework(it.item as String?)
+                        }
+                    }
                 }
             }
         }

@@ -13,8 +13,13 @@ import com.intellij.ui.components.JBScrollPane
 import org.jdesktop.swingx.JXTree
 import ru.testit.client.model.SectionModel
 import ru.testit.management.clients.TmsClient
+import ru.testit.management.enums.FrameworkOption
+import ru.testit.management.snippet.JunitSnippet
+import ru.testit.management.snippet.PytestSnippet
+import ru.testit.management.utils.CodeSnippetUtils
 import ru.testit.management.utils.MessagesUtils
 import ru.testit.management.utils.VirtualFileUtils
+import ru.testit.management.windows.settings.TmsSettingsState
 import java.awt.Component
 import javax.swing.SwingConstants
 import javax.swing.UIManager
@@ -142,6 +147,17 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
         return parentSectionNode
     }
 
+    private fun findTestByGlobalId(lines: MutableList<String>, globalId: Long): Int? {
+        val line: Int?
+        for (counter in lines.indices) {
+            if (lines[counter].contains(CodeSnippetUtils.getComparator()(globalId))) {
+                line = counter
+                return line
+            }
+        }
+        return null
+    }
+
     private fun getModelWithFileLineModified(model: TmsNodeModel, project: Project): TmsNodeModel {
         val globalId = model.globalId ?: return model
         VirtualFileUtils.refresh(project)
@@ -153,16 +169,7 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
                 lines.addAll(FileDocumentManager.getInstance().getDocument(file)?.charsSequence?.lines().orEmpty())
             }
 
-            var line: Int? = null
-
-            for (counter in lines.indices) {
-                if (lines[counter].contains("@WorkItemIds(\"$globalId\")")) {
-                    line = counter
-
-                    break
-                }
-            }
-
+            val line: Int? = findTestByGlobalId(lines, globalId)
             if (line != null) {
                 model.file = file
                 model.line = line

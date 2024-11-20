@@ -8,6 +8,9 @@ project's work items and hierarchies, generate unit tests for selected work item
 >
 > Click the <kbd>Watch</kbd> button on the top to be notified about releases containing new features and fixes.
 
+
+### We added PyCharm and pytest support recently (1.0.12)! 
+
 ## Compatibility
 
 | Test IT | Plugin Test IT Management |
