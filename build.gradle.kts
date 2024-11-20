@@ -1,10 +1,11 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    alias(libs.plugins.intellij)
     alias(libs.plugins.kotlin)
+    id("org.jetbrains.intellij.platform") version "2.1.0"
 }
 
 fun properties(key: String) = providers.gradleProperty(key)
@@ -16,9 +17,37 @@ version = properties("pluginVersion").get()
 repositories {
     mavenLocal()
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 dependencies {
+    intellijPlatform {
+        plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
+        bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
+        instrumentationTools()
+
+        var ideaVersion = properties("ideaVersion")
+        var pycharmVersion = properties("pycharmVersion")
+
+
+        if (project.hasProperty("isPyCharm")) {
+            logger.quiet("PyCharm build enabled")
+            create(IntelliJPlatformType.PyCharmCommunity, pycharmVersion)
+        } else if (project.hasProperty("isIDEA")) {
+            logger.quiet("IDEA build enabled")
+            create(IntelliJPlatformType.IntellijIdeaCommunity, ideaVersion)
+        } else {
+            logger.quiet("Default IDEA build enabled")
+            create(IntelliJPlatformType.IntellijIdeaCommunity, ideaVersion)
+        }
+        instrumentationTools()
+        pluginVerifier()
+        // zipSigner()
+        // testFramework(TestFrameworkType.Platform)
+
+    }
     api(libs.okhttp)
     implementation(kotlin("stdlib-jdk8"))
     implementation(libs.jsoup)
@@ -28,15 +57,28 @@ dependencies {
     testCompileOnly(libs.testit.common)
 }
 
-intellij {
-    pluginName = properties("pluginName")
-    version = properties("platformVersion")
-    type = properties("platformType")
-    plugins = properties("platformPlugins").map {
-        it.split(',').map(String::trim).filter(String::isNotEmpty)
+intellijPlatform {
+    pluginConfiguration {
+        name = properties("pluginName")
+
+        description = "The Test IT Management plugin is a powerful tool for managing test cases. It provides an ability to browse work items hierarchies, generate unit tests for selected scenarios."
+        ideaVersion {
+            sinceBuild = properties("pluginSinceBuild")
+            untilBuild = properties("pluginUntilBuild")
+        }
+        vendor {
+            name = "Test IT"
+            url = "https://testit.software"
+        }
     }
-    downloadSources = true
+
+    pluginVerification {
+        ides {
+            recommended()
+        }
+    }
 }
+
 
 kotlin {
     jvmToolchain(properties("javaVersion").get().toInt())
@@ -52,12 +94,12 @@ tasks {
     }
 
     patchPluginXml {
-        version = properties("pluginVersion")
         sinceBuild = properties("pluginSinceBuild")
         untilBuild = properties("pluginUntilBuild")
     }
 
     publishPlugin {
+
         dependsOn("patchChangelog")
         token = environment("PUBLISH_TOKEN")
         channels = properties("pluginVersion").map {
@@ -120,3 +162,5 @@ tasks {
         useJUnitPlatform()
     }
 }
+
+

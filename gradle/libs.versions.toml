@@ -8,7 +8,6 @@ testit-common = "latest.release"
 
 # plugins
 kotlin = "2.0.0"
-intellij = "1.17.3"
 
 [libraries]
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
@@ -18,5 +17,4 @@ testit-api = { group = "ru.testit", name = "testit-api-client", version.ref = "t
 testit-common = { group = "ru.testit", name = "testit-java-commons", version.ref = "testit-common" }
 
 [plugins]
-intellij = { id = "org.jetbrains.intellij", version.ref = "intellij" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

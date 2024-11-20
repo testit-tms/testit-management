@@ -33,10 +33,7 @@ object TmsClient {
 
             return errorMessage
         } catch (exception: Throwable) {
-            return String.format(
-                MessagesUtils.get("api.validation.project.error.text"),
-                exception.message
-            )
+            return exception.message
         } finally {
             client?.httpClient?.connectionPool?.evictAll()
         }

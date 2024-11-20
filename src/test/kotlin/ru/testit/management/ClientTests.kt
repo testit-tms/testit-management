@@ -14,7 +14,7 @@ class ClientTests {
     fun checkMessage() {
         // Arrange
         val expected =
-            "<html><body style='width: 350px;'>Expected URL scheme 'http' or 'https' but no scheme was found for /api/v...</body></html>"
+            "Expected URL scheme 'http' or 'https' but no scheme was found for /api/v..."
 
         // Act
         val actual = TmsClient.getSettingsValidationErrorMsg("", "", "")

@@ -3,78 +3,44 @@ package ru.testit.management.utils
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 import ru.testit.client.model.StepModel
+import ru.testit.management.enums.FrameworkOption
+import ru.testit.management.snippet.JunitSnippet
+import ru.testit.management.snippet.PytestSnippet
+import ru.testit.management.windows.settings.TmsSettingsState
 import ru.testit.management.windows.tools.TmsNodeModel
 
-object CodeSnippedUtils {
-    private const val DEFAULT_CODE_SNIPPET = """
-    @WorkItemIds("globalId")
-    @Test
-    public void testName() {
-        // See work item [globalId] for detailed steps description
-        // Pre:
-        //   preconditions
-        // Steps:
-        //   testSteps
-        // Post:
-        //   postconditions
-    }
-"""
+object CodeSnippetUtils {
 
     fun getNewSnippet(userObject: Any): String {
-        val model = userObject as TmsNodeModel
-        val builder = StringBuilder()
-
-        DEFAULT_CODE_SNIPPET.lines().forEach { line ->
-            var modifiedLine = line
-                .replace("testName", getTestName(model))
-                .replace("globalId", model.globalId.toString())
-
-            modifiedLine = tryUpdateLineWithSteps(modifiedLine, model)
-
-            if (modifiedLine.isNotBlank()) {
-                builder.appendLine(modifiedLine)
-            }
+        val framework: String? = TmsSettingsState.instance.getFramework()
+        val snippet = when (framework) {
+            FrameworkOption.PYTEST.toString() -> PytestSnippet.getNewSnippetPytest(userObject)
+            FrameworkOption.JUNIT.toString() -> JunitSnippet.getNewSnippetJunit(userObject)
+            else -> JunitSnippet.getNewSnippetJunit(userObject)
         }
-
-        return builder.toString().trimIndent()
+        return snippet
     }
 
-    private fun getTestName(model: TmsNodeModel): String {
+    fun getComparator(): (Long) -> String {
+        val framework: String? = TmsSettingsState.instance.getFramework()
+        val comparator = when (framework) {
+            FrameworkOption.PYTEST.toString() -> PytestSnippet.comparator
+            FrameworkOption.JUNIT.toString() -> JunitSnippet.comparator
+            else -> JunitSnippet.comparator
+        }
+        return comparator
+    }
+
+    fun getTestName(model: TmsNodeModel): String {
         var testName = model.name.orEmpty()
 
         while (testName.isNotBlank() && testName[0].isDigit()) {
             testName = testName.drop(1)
         }
-
-        val builder = StringBuilder()
-        var lastCharSkipped = false
-
-        for (symbol in testName) {
-            if (symbol.isLetterOrDigit()) {
-                when {
-                    builder.isBlank() -> {
-                        builder.append(symbol.lowercaseChar())
-                    }
-
-                    lastCharSkipped && builder.isNotBlank() -> {
-                        builder.append(symbol.uppercaseChar())
-                    }
-
-                    else -> {
-                        builder.append(symbol)
-                    }
-                }
-
-                lastCharSkipped = false
-            } else {
-                lastCharSkipped = true
-            }
-        }
-
-        return builder.toString()
+        return testName
     }
 
-    private fun tryUpdateLineWithSteps(line: String, model: TmsNodeModel): String {
+    fun tryUpdateLineWithSteps(line: String, model: TmsNodeModel): String {
         when {
             line.contains("preconditions") -> {
                 val prefix = line.substringBefore("preconditions")

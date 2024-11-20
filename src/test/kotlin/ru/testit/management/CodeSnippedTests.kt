@@ -3,7 +3,8 @@ package ru.testit.management
 import kotlinx.collections.immutable.persistentSetOf
 import org.junit.jupiter.api.DisplayName
 import ru.testit.client.model.StepModel
-import ru.testit.management.utils.CodeSnippedUtils
+import ru.testit.management.snippet.JunitSnippet
+import ru.testit.management.utils.CodeSnippetUtils
 import ru.testit.management.windows.tools.TmsNodeModel
 import kotlin.test.DefaultAsserter.assertEquals
 import kotlin.test.Test
@@ -45,7 +46,7 @@ public void testName() {
 }"""
 
         // Act
-        val actual = CodeSnippedUtils.getNewSnippet(model)
+        val actual = JunitSnippet.getNewSnippetJunit(model)
 
         // Assert
         assertEquals("Code snipped text assertion failed!", expected, actual)
