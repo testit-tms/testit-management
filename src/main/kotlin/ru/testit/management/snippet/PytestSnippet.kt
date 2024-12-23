@@ -14,13 +14,13 @@ object PytestSnippet {
     @testit.description("description")
     @testit.workItemIds("globalId")
     def testName(): 
-        // See work item [globalId] for detailed steps description
-        // Pre:
-        //   preconditions
-        // Steps:
-        //   testSteps
-        // Post:
-        //   postconditions
+        # See work item [globalId] for detailed steps description
+        # Pre:
+        #   preconditions
+        # Steps:
+        #   testSteps
+        # Post:
+        #   postconditions
     
 """
 
