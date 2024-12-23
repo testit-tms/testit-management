@@ -3,7 +3,7 @@
 jsoup = "1.17.2"
 okhttp = "4.12.0"
 slf4j = "2.0.13"
-testit-api = "latest.release"
+testit-api = "0.4.2-1"
 testit-common = "latest.release"
 
 # plugins
