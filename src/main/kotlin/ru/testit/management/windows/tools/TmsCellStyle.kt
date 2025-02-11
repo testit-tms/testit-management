@@ -52,11 +52,11 @@ class TmsCellStyle : DefaultTreeCellRenderer() {
 
     private fun setWorkItemIcon(model: TmsNodeModel) {
         when (model.entityTypeName) {
-            WorkItemEntityTypes.CHECKLISTS -> {
+            WorkItemEntityTypes.CHECK_LISTS -> {
                 this.icon = getCheckListIcon(model.isAutomated)
             }
 
-            WorkItemEntityTypes.SHAREDSTEPS -> {
+            WorkItemEntityTypes.SHARED_STEPS -> {
                 this.icon = getSharedStepIcon(model.isAutomated)
             }
 
