@@ -28,8 +28,8 @@ dependencies {
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
         instrumentationTools()
 
-        var ideaVersion = properties("ideaVersion")
-        var pycharmVersion = properties("pycharmVersion")
+        val ideaVersion = properties("ideaVersion")
+        val pycharmVersion = properties("pycharmVersion")
 
 
         if (project.hasProperty("isPyCharm")) {
@@ -54,7 +54,6 @@ dependencies {
     implementation(libs.slf4j)
     implementation(libs.testit.api)
     testImplementation(kotlin("test"))
-    testCompileOnly(libs.testit.common)
 }
 
 intellijPlatform {

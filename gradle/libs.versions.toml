@@ -3,8 +3,7 @@
 jsoup = "1.17.2"
 okhttp = "4.12.0"
 slf4j = "2.0.13"
-testit-api = "1.0.0-TMS-5.2.2"
-testit-common = "2.5.1"
+testit-api = "2.0.0-TMS-CLOUD"
 
 # plugins
 kotlin = "2.0.0"
@@ -14,7 +13,6 @@ jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 slf4j = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
 testit-api = { group = "ru.testit", name = "testit-api-client", version.ref = "testit-api" }
-testit-common = { group = "ru.testit", name = "testit-java-commons", version.ref = "testit-common" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

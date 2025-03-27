@@ -74,11 +74,11 @@ object TmsClient {
             return workItems
         }
 
-        val filter = WorkItemFilterModel()
+        val filter = WorkItemFilterApiModel()
         filter.sectionIds = setOf(sectionId)
         filter.isDeleted = false
 
-        val request = WorkItemSelectModel()
+        val request = WorkItemSelectApiModel()
         request.filter = filter
 
         try {
