@@ -7,7 +7,7 @@ import ru.testit.management.utils.StringUtils
 import ru.testit.management.windows.tools.TmsNodeModel
 
 object PytestSnippet {
-    const val PYTEST_CODE_SNIPPET = """
+    private const val PYTEST_CODE_SNIPPET = """
     @testit.externalId("externalId")
     @testit.displayName("displayName_")
     @testit.title("title_")
@@ -22,7 +22,7 @@ object PytestSnippet {
         # Post:
         #   postconditions
     
-"""
+    """
 
     val comparator = { globalId: Long  -> "@testit.workItemIds(\"$globalId\")" }
 

@@ -31,5 +31,10 @@
                 class="ru.testit.management.actions.SyncProjectAction"
                 icon="AllIcons.Actions.Refresh"
                 text="Refresh Test IT Data"/>
+        <action id="ru.testit.management.SearchAllureAction"
+                class="ru.testit.management.actions.SearchAllureAction"
+                icon="AllIcons.Actions.Replace"
+                text="Search Allure methods">
+        </action>
     </actions>
 </idea-plugin>

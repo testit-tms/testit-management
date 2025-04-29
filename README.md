@@ -55,6 +55,10 @@ Copy work item's code snippet using context menu, then paste it from clipboard i
 
 Double-click on the tree item opens an editor with the autotest's first line focused (if exists).
 
+### Search and replace Allure methods
+
+Click on the "Search Allure methods" button.
+
 ## Contributing
 
 You can help to develop the project. Any contributions are **greatly appreciated**.
