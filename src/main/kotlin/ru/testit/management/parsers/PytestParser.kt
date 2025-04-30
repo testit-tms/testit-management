@@ -3,6 +3,8 @@ package ru.testit.management.parsers
 import ru.testit.management.parsers.models.MatchInfo
 import java.util.regex.Pattern
 
+// TODO: move all regex patterns to the separate file
+// TODO: move all objects to the separate file
 object PytestParser {
     private const val ANNOTATION_SEPARATOR = "\\."
     private const val EVERYTHING_IN_PARENTHESES = "\\([\\s\\S][^)]{1,}\\)"
@@ -116,91 +118,64 @@ object PytestParser {
     private const val TMS_ADD_PARAMETER = TMS_METHOD_OBJECT + "addParameter"
     private const val TMS_ADD_ATTACHMENTS = TMS_METHOD_OBJECT + "addAttachments"
 
-    fun getAllPatterns(): List<String>
-    {
-        return listOf(
-            IMPORT_ALLURE_OBJECT,
-            ALLURE_TITLE,
-            ALLURE_DESCRIPTION,
-            ALLURE_DESCRIPTION_HTML,
-            ALLURE_TAG,
-            ALLURE_LABEL,
-            ALLURE_ID,
-            ALLURE_STEP,
-            ALLURE_LINK,
-            ALLURE_ISSUE,
-            ALLURE_TESTCASE,
-            ALLURE_PARENT_SUITE,
-            ALLURE_SUITE,
-            ALLURE_SUB_SUITE,
-            ALLURE_EPIC,
-            ALLURE_FEATURE,
-            ALLURE_STORY,
-            ALLURE_DYNAMIC_TITLE,
-            ALLURE_DYNAMIC_DESCRIPTION,
-            ALLURE_DYNAMIC_DESCRIPTION_HTML,
-            ALLURE_DYNAMIC_LINK,
-            ALLURE_DYNAMIC_ISSUE,
-            ALLURE_DYNAMIC_TESTCASES,
-            ALLURE_DYNAMIC_TAG,
-            ALLURE_DYNAMIC_LABEL,
-            ALLURE_DYNAMIC_ID,
-            ALLURE_DYNAMIC_EPIC,
-            ALLURE_DYNAMIC_FEATURE,
-            ALLURE_DYNAMIC_STORY,
-            ALLURE_DYNAMIC_PARENT_SUITE,
-            ALLURE_DYNAMIC_SUITE,
-            ALLURE_DYNAMIC_SUB_SUITE,
-            ALLURE_DYNAMIC_PARAMETER,
-            ALLURE_DYNAMIC_ATTACHMENT_WRITE,
-            ALLURE_DYNAMIC_ATTACHMENT_READ)
+    // Compile patterns lazily once
+    private val patternActions: List<Pair<Pattern, Any>> by lazy {
+        listOf(
+            Pattern.compile(IMPORT_ALLURE_OBJECT) to IMPORT_TMS_OBJECT,
+            Pattern.compile(ALLURE_TITLE) to TMS_DISPLAY_NAME,
+            Pattern.compile(ALLURE_DESCRIPTION) to TMS_DESCRIPTION,
+            Pattern.compile(ALLURE_DESCRIPTION_HTML) to TMS_DESCRIPTION,
+            Pattern.compile(ALLURE_TAG) to TMS_LABELS,
+            Pattern.compile(ALLURE_LABEL) to TMS_LABELS,
+            Pattern.compile(ALLURE_ID) to TMS_LABELS,
+            Pattern.compile(ALLURE_STEP) to TMS_STEP,
+            Pattern.compile(ALLURE_LINK) to ::parseLinkAnnotation,
+            Pattern.compile(ALLURE_ISSUE) to ::parseLinkAnnotation,
+            Pattern.compile(ALLURE_TESTCASE) to ::parseLinkAnnotation,
+            Pattern.compile(ALLURE_PARENT_SUITE) to TMS_NAMESPACE,
+            Pattern.compile(ALLURE_SUITE) to TMS_NAMESPACE,
+            Pattern.compile(ALLURE_SUB_SUITE) to TMS_CLASSNAME,
+            Pattern.compile(ALLURE_EPIC) to TMS_NAMESPACE,
+            Pattern.compile(ALLURE_FEATURE) to TMS_NAMESPACE,
+            Pattern.compile(ALLURE_STORY) to TMS_CLASSNAME,
+            Pattern.compile(ALLURE_DYNAMIC_TITLE) to TMS_ADD_DISPLAY_NAME,
+            Pattern.compile(ALLURE_DYNAMIC_DESCRIPTION) to TMS_ADD_DESCRIPTION,
+            Pattern.compile(ALLURE_DYNAMIC_DESCRIPTION_HTML) to TMS_ADD_DESCRIPTION,
+            Pattern.compile(ALLURE_DYNAMIC_LINK) to ::parseLinkMethod,
+            Pattern.compile(ALLURE_DYNAMIC_ISSUE) to ::parseLinkMethod,
+            Pattern.compile(ALLURE_DYNAMIC_TESTCASES) to ::parseLinkMethod,
+            Pattern.compile(ALLURE_DYNAMIC_TAG) to TMS_ADD_LABELS,
+            Pattern.compile(ALLURE_DYNAMIC_LABEL) to TMS_ADD_LABELS,
+            Pattern.compile(ALLURE_DYNAMIC_ID) to TMS_ADD_LABELS,
+            Pattern.compile(ALLURE_DYNAMIC_EPIC) to TMS_ADD_NAMESPACE,
+            Pattern.compile(ALLURE_DYNAMIC_FEATURE) to TMS_ADD_NAMESPACE,
+            Pattern.compile(ALLURE_DYNAMIC_STORY) to TMS_ADD_CLASSNAME,
+            Pattern.compile(ALLURE_DYNAMIC_PARENT_SUITE) to TMS_ADD_NAMESPACE,
+            Pattern.compile(ALLURE_DYNAMIC_SUITE) to TMS_ADD_NAMESPACE,
+            Pattern.compile(ALLURE_DYNAMIC_SUB_SUITE) to TMS_ADD_CLASSNAME,
+            Pattern.compile(ALLURE_DYNAMIC_ATTACHMENT_WRITE) to ::parseWriteAttachMethod,
+            Pattern.compile(ALLURE_DYNAMIC_ATTACHMENT_READ) to ::parseReadAttachMethod,
+            Pattern.compile(ALLURE_DYNAMIC_PARAMETER) to ::parseParameterMethod
+        )
     }
 
     fun parse(line: String, matchInfo: MatchInfo): String
     {
-        return when {
-            containsPattern(line, IMPORT_ALLURE_OBJECT) -> IMPORT_TMS_OBJECT
-            containsPattern(line, ALLURE_TITLE) -> TMS_DISPLAY_NAME
-            containsPattern(line, ALLURE_DESCRIPTION) -> TMS_DESCRIPTION
-            containsPattern(line, ALLURE_DESCRIPTION_HTML) -> TMS_DESCRIPTION
-            containsPattern(line, ALLURE_TAG) -> TMS_LABELS
-            containsPattern(line, ALLURE_LABEL) -> TMS_LABELS
-            containsPattern(line, ALLURE_ID) -> TMS_LABELS
-            containsPattern(line, ALLURE_STEP) -> TMS_STEP
-            containsPattern(line, ALLURE_LINK) -> parseLinkAnnotation(matchInfo)
-            containsPattern(line, ALLURE_ISSUE) -> parseLinkAnnotation(matchInfo)
-            containsPattern(line, ALLURE_TESTCASE) -> parseLinkAnnotation(matchInfo)
-            containsPattern(line, ALLURE_PARENT_SUITE) -> TMS_NAMESPACE
-            containsPattern(line, ALLURE_SUITE) -> TMS_NAMESPACE
-            containsPattern(line, ALLURE_SUB_SUITE) -> TMS_CLASSNAME
-            containsPattern(line, ALLURE_EPIC) -> TMS_NAMESPACE
-            containsPattern(line, ALLURE_FEATURE) -> TMS_NAMESPACE
-            containsPattern(line, ALLURE_STORY) -> TMS_CLASSNAME
-            containsPattern(line, ALLURE_DYNAMIC_TITLE) -> TMS_ADD_DISPLAY_NAME
-            containsPattern(line, ALLURE_DYNAMIC_DESCRIPTION) -> TMS_ADD_DESCRIPTION
-            containsPattern(line, ALLURE_DYNAMIC_DESCRIPTION_HTML) -> TMS_ADD_DESCRIPTION
-            containsPattern(line, ALLURE_DYNAMIC_LINK) -> parseLinkMethod(matchInfo)
-            containsPattern(line, ALLURE_DYNAMIC_ISSUE) -> parseLinkMethod(matchInfo)
-            containsPattern(line, ALLURE_DYNAMIC_TESTCASES) -> parseLinkMethod(matchInfo)
-            containsPattern(line, ALLURE_DYNAMIC_TAG) -> TMS_ADD_LABELS
-            containsPattern(line, ALLURE_DYNAMIC_LABEL) -> TMS_ADD_LABELS
-            containsPattern(line, ALLURE_DYNAMIC_ID) -> TMS_ADD_LABELS
-            containsPattern(line, ALLURE_DYNAMIC_EPIC) -> TMS_ADD_NAMESPACE
-            containsPattern(line, ALLURE_DYNAMIC_FEATURE) -> TMS_ADD_NAMESPACE
-            containsPattern(line, ALLURE_DYNAMIC_STORY) -> TMS_ADD_CLASSNAME
-            containsPattern(line, ALLURE_DYNAMIC_PARENT_SUITE) -> TMS_ADD_NAMESPACE
-            containsPattern(line, ALLURE_DYNAMIC_SUITE) -> TMS_ADD_NAMESPACE
-            containsPattern(line, ALLURE_DYNAMIC_SUB_SUITE) -> TMS_ADD_CLASSNAME
-            containsPattern(line, ALLURE_DYNAMIC_ATTACHMENT_WRITE) -> parseWriteAttachMethod(matchInfo)
-            containsPattern(line, ALLURE_DYNAMIC_ATTACHMENT_READ) -> parseReadAttachMethod(matchInfo)
-            containsPattern(line, ALLURE_DYNAMIC_PARAMETER) -> parseParameterMethod(matchInfo)
-            else -> throw Exception("Not contains with allure methods in line \"$line\" not found")
+        for ((pattern, action) in patternActions) {
+            if (pattern.matcher(line).find()) {
+                return when (action) {
+                    is String -> action
+                    is Function1<*, *> -> {
+                        @Suppress("UNCHECKED_CAST")
+                        val function = action as (MatchInfo) -> String
+                        function(matchInfo)
+                    }
+                    // should be never called
+                    else -> throw IllegalStateException("Unknown action type in patternActions") 
+                }
+            }
         }
-    }
-
-    private fun containsPattern(line: String, pattern: String): Boolean
-    {
-        return Pattern.compile(pattern).matcher(line).find()
+        throw Exception("No matching Allure pattern found in line "$line"")
     }
 
     private fun parseLinkAnnotation(matchInfo: MatchInfo): String
@@ -251,14 +226,9 @@ object PytestParser {
 
         val body = bodyMatch.groups.get(ATTACHMENT_BODY_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(ATTACHMENT_NAME_PARAMETER_NAME)?.value
-        var tmsCode = TMS_ADD_ATTACHMENTS + "(" + body + PARAMETERS_SEPARATOR_OBJECT + "is_text=True"
-
-        if (name != null)
-        {
-            tmsCode += PARAMETERS_SEPARATOR_OBJECT + "name=" + name
-        }
-
-        tmsCode += ")"
+        // TODO: apply the same for other methods
+        var nameTitleBlock = if (name != null) "${PARAMETERS_SEPARATOR_OBJECT}title=${name}" + name else ""
+        var tmsCode = "${TMS_ADD_ATTACHMENTS}(${body}${PARAMETERS_SEPARATOR_OBJECT}is_text=True${nameTitleBlock})"
 
         return tmsCode
     }
@@ -293,6 +263,7 @@ object PytestParser {
         val name = nameMatch.groups.get(PARAMETER_NAME_PARAMETER_NAME)?.value
         val value = valueMatch.groups.get(PARAMETER_VALUE_PARAMETER_NAME)?.value
 
-        return TMS_ADD_PARAMETER + "(name=" + name + PARAMETERS_SEPARATOR_OBJECT + "value=" + value + ")"
+        // Use string template for better readability
+        return "${TMS_ADD_PARAMETER}(name=$name${PARAMETERS_SEPARATOR_OBJECT}value=$value)"
     }
 }
