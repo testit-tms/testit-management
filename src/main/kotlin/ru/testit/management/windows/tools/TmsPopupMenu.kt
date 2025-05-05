@@ -3,7 +3,6 @@ package ru.testit.management.windows.tools
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
-import ru.testit.management.snippet.PytestSnippet
 import ru.testit.management.utils.ClipboardUtils
 import ru.testit.management.utils.CodeSnippetUtils
 import ru.testit.management.utils.MessagesUtils

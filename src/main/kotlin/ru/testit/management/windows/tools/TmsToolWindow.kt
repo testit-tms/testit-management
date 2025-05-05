@@ -13,16 +13,14 @@ import com.intellij.ui.components.JBScrollPane
 import org.jdesktop.swingx.JXTree
 import ru.testit.client.model.SectionModel
 import ru.testit.management.clients.TmsClient
-import ru.testit.management.enums.FrameworkOption
-import ru.testit.management.snippet.JunitSnippet
-import ru.testit.management.snippet.PytestSnippet
+import ru.testit.management.windows.differs.FileDiffWindow
+import ru.testit.management.parsers.models.MatchInfo
 import ru.testit.management.utils.CodeSnippetUtils
 import ru.testit.management.utils.MessagesUtils
 import ru.testit.management.utils.VirtualFileUtils
-import ru.testit.management.windows.settings.TmsSettingsState
+import java.awt.BorderLayout
 import java.awt.Component
-import javax.swing.SwingConstants
-import javax.swing.UIManager
+import javax.swing.*
 import javax.swing.tree.DefaultMutableTreeNode
 
 
@@ -35,6 +33,7 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
     }
 
     private var _tree: Component? = null
+    private var _search: Component? = null
 
     init {
         showActionsToolbar()
@@ -45,9 +44,29 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
             remove(_tree)
         }
 
-        val label = getSpinner()
+        if (_search != null)
+        {
+            remove(_search)
+        }
+
+        val label = getSpinnerForRefresh()
         add(label)
         showTree(label, project)
+    }
+
+    fun research(project: Project, results: MutableMap<String, List<MatchInfo>>) {
+        if (_tree != null) {
+            remove(_tree)
+        }
+
+        if (_search != null)
+        {
+            remove(_search)
+        }
+
+        val label = getSpinnerForResearch()
+        add(label)
+        showSearchTree(label, project, results)
     }
 
     private fun showActionsToolbar() {
@@ -60,18 +79,31 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
         val openTmsSettings = actionManager.getAction("ru.testit.management.OpenSettingsAction")
         group.add(openTmsSettings)
 
+        val searchAllure = actionManager.getAction("ru.testit.management.SearchAllureAction")
+        group.add(searchAllure)
+
         val actionToolbar = actionManager.createActionToolbar(ActionPlaces.TOOLBAR, group, true)
         actionToolbar.targetComponent = this
 
         runInEdt { toolbar = actionToolbar.component }
     }
 
-    private fun getSpinner(): Component {
+    private fun getSpinnerForRefresh(): Component {
         val label = JBLabel()
 
         label.verticalAlignment = SwingConstants.CENTER
         label.horizontalAlignment = SwingConstants.CENTER
         label.text = MessagesUtils.get("window.tool.spinner.text")
+
+        return label
+    }
+
+    private fun getSpinnerForResearch(): Component {
+        val label = JBLabel()
+
+        label.verticalAlignment = SwingConstants.CENTER
+        label.horizontalAlignment = SwingConstants.CENTER
+        label.text = MessagesUtils.get("window.tool.spinner.search.text")
 
         return label
     }
@@ -89,12 +121,55 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
         }
     }
 
+    private fun showSearchTree(label: Component, project: Project, results: MutableMap<String, List<MatchInfo>>) {
+        val oldStyle = UIManager.get("Tree.rendererFillBackground")
+
+        try {
+            UIManager.put("Tree.rendererFillBackground", false)
+            _search = getSearchTree(project, results)
+            remove(label)
+            add(_search)
+        } finally {
+            UIManager.put("Tree.rendererFillBackground", oldStyle)
+        }
+    }
+
     private fun getTree(project: Project): Component {
         val tree = JXTree(getRootTreeNode(project))
         tree.cellRenderer = TmsCellStyle()
         tree.addMouseListener(TmsMouseListener(project, tree))
 
         return tree
+    }
+
+    private fun getSearchTree(project: Project, results: MutableMap<String, List<MatchInfo>>): Component {
+        val root = getSearchTreeNode(results)
+        val tree = JXTree(root)
+        tree.cellRenderer = CheckBoxTreeCellRenderer()
+
+        tree.addMouseListener(SearchAllureMouseListener(project, tree, results))
+
+        val buttonPanel = JPanel()
+        val replaceSelectedButton = JButton("Replace selected")
+        val replaceAllButton = JButton("Replace all")
+
+        buttonPanel.add(replaceSelectedButton)
+        buttonPanel.add(replaceAllButton)
+
+        replaceSelectedButton.addActionListener {
+            FileDiffWindow.instance.show(project, root, false, results)
+        }
+
+        replaceAllButton.addActionListener {
+            FileDiffWindow.instance.show(project, root, true, results)
+        }
+
+        val scrollPane = JBScrollPane(tree)
+        val mainPanel = JPanel(BorderLayout())
+        mainPanel.add(scrollPane, BorderLayout.CENTER)
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH)
+
+        return mainPanel
     }
 
     private fun getRootTreeNode(project: Project): DefaultMutableTreeNode? {
@@ -145,6 +220,27 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
         }
 
         return parentSectionNode
+    }
+
+    private fun getSearchTreeNode(
+        results: MutableMap<String, List<MatchInfo>>
+    ): DefaultMutableTreeNode {
+        val root = DefaultMutableTreeNode("Allure results")
+
+        results.keys.forEach { filePath ->
+            val fileNode = DefaultMutableTreeNode(filePath)
+            val matches = results[filePath]!!.sortedBy { match -> match.start }
+            results[filePath] = matches
+
+            matches.forEach { matchInfo ->
+                fileNode.add(
+                    DefaultMutableTreeNode(
+                        CheckBoxNode("${matchInfo.text} (line ${matchInfo.lineNumber + 1})")))
+            }
+            root.add(fileNode)
+        }
+
+        return root
     }
 
     private fun findTestByGlobalId(lines: MutableList<String>, globalId: Long): Int? {
