@@ -48,7 +48,7 @@ object SearchAllureUtils {
         }
     }
 
-    private fun getResults(project: Project, regexPatterns: List<String>): MutableMap<String, List<MatchInfo>> {
+    private fun getResults(project: Project, regexPatterns: List<Regex>): MutableMap<String, List<MatchInfo>> {
         val results = mutableMapOf<String, List<MatchInfo>>()
 
         for (regexPattern in regexPatterns) {
@@ -74,7 +74,7 @@ object SearchAllureUtils {
         return results
     }
 
-    private fun searchFiles(project: Project, file: VirtualFile, pattern: String): MutableMap<String, List<MatchInfo>> {
+    private fun searchFiles(project: Project, file: VirtualFile, pattern: Regex): MutableMap<String, List<MatchInfo>> {
         val results = mutableMapOf<String, List<MatchInfo>>()
 
         if (file.isDirectory) {
@@ -86,8 +86,7 @@ object SearchAllureUtils {
         } else {
             try {
                 val content = FileDocumentManager.getInstance().getDocument(file)?.text
-                val regex = Regex(pattern, RegexOption.MULTILINE)
-                val matches = regex.findAll(content.toString()).map { match ->
+                val matches = pattern.findAll(content.toString()).map { match ->
                     val (lineNumber, column) = calculateLineAndColumn(content.toString(), match.range.first)
                     MatchInfo(
                         text = match.value,

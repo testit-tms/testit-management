@@ -6,12 +6,12 @@ import ru.testit.management.parsers.models.MatchInfo
 import ru.testit.management.windows.settings.TmsSettingsState
 
 object ParsingAnnotationsUtils {
-    fun getAllPatterns(): List<String> {
+    fun getAllPatterns(): List<Regex> {
         val framework: String? = TmsSettingsState.instance.getFramework()
         val patterns = when (framework) {
-            FrameworkOption.PYTEST.toString() -> PytestParser.getAllPatterns()
+            FrameworkOption.PYTEST.toString() -> PytestParser.getPatterns()
 //            FrameworkOption.RobotFramework.toString() -> RobotFrameworkParser.getAllPatterns()
-            else -> PytestParser.getAllPatterns()
+            else -> PytestParser.getPatterns()
         }
         return patterns
     }
