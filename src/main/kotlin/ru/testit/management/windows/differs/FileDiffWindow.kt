@@ -42,6 +42,7 @@ class FileDiffWindow private constructor() {
         effectColor = JBColor.BLACK
     }
 
+    //TODO: refactoring
     fun show(
         project: Project,
         root: DefaultMutableTreeNode,

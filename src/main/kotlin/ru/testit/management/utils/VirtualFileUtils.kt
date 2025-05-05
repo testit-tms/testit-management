@@ -46,6 +46,7 @@ object VirtualFileUtils {
         return allUpdateFiles
     }
 
+    //TODO: refactoring
     private fun replaceInFile(
         fileNode: DefaultMutableTreeNode,
         replaceAll: Boolean,
