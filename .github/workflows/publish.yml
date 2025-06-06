@@ -10,6 +10,16 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ide: [
+          PyCharm,
+          IDEA,
+          WebStorm,
+          Rider
+        ]
+
     permissions:
       contents: write
     steps:
@@ -31,19 +41,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      # Build plugin for PyCharm
-      - name: Build Plugin for PyCharm
+      - name: Build Plugin for ${{ matrix.ide }}
         run: |
-          ./gradlew buildPlugin -PisPyCharm=true --no-build-cache --no-configuration-cache
+          ./gradlew buildPlugin -Pis${{ matrix.ide }}=true --no-build-cache --no-configuration-cache
           cd build/distributions
-          for f in testit_management-*.zip; do mv "$f" "${f/testit_management-/testit_management_PyCharm-}"; done
-
-      # Build plugin for IDEA
-      - name: Build Plugin for IDEA
-        run: | 
-          ./gradlew buildPlugin -PisIDEA=true --no-build-cache --no-configuration-cache
-          cd build/distributions
-          for f in testit_management-*.zip; do mv "$f" "${f/testit_management-/testit_management_IDEA-}"; done
+          for f in testit_management-*.zip; do mv "$f" "${f/testit_management-/testit_management_${{ matrix.ide }}-}"; done
 
       - name: Upload Release Asset
         env:

@@ -6,7 +6,11 @@ enum class FrameworkOption {
     },
     PYTEST {
         override fun toString() = "pytest"
+    },
+    MSTEST {
+        override fun toString() = "mstest"
+    },
+    PLAYWRIGHT {
+        override fun toString() = "playwright"
     }
-
-
 }

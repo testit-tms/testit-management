@@ -30,7 +30,8 @@ dependencies {
 
         val ideaVersion = properties("ideaVersion")
         val pycharmVersion = properties("pycharmVersion")
-
+        val webstormVersion = properties("webstormVersion")
+        val riderVersion = properties("riderVersion")
 
         if (project.hasProperty("isPyCharm")) {
             logger.quiet("PyCharm build enabled")
@@ -38,6 +39,12 @@ dependencies {
         } else if (project.hasProperty("isIDEA")) {
             logger.quiet("IDEA build enabled")
             create(IntelliJPlatformType.IntellijIdeaCommunity, ideaVersion)
+        } else if (project.hasProperty("isWebStorm")) {
+            logger.quiet("WebStorm build enabled")
+            create(IntelliJPlatformType.WebStorm, webstormVersion)
+        } else if (project.hasProperty("isRider")) {
+            logger.quiet("Rider build enabled")
+            create(IntelliJPlatformType.Rider, riderVersion)
         } else {
             logger.quiet("Default IDEA build enabled")
             create(IntelliJPlatformType.IntellijIdeaCommunity, ideaVersion)

@@ -5,11 +5,16 @@ import ru.testit.management.utils.CodeSnippetUtils.tryUpdateLineWithSteps
 import ru.testit.management.utils.StringUtils
 import ru.testit.management.windows.tools.TmsNodeModel
 
-object JunitSnippet {
-    private const val JUNIT_CODE_SNIPPET = """
-    @WorkItemIds("globalId")
-    @Test
-    public void testName() {
+object MSTestSnippet {
+    private const val MSTEST_CODE_SNIPPET = """
+    [ExternalId("externalId")]
+    [DisplayName("displayName_")]
+    [Title("title_")]
+    [Tms.Adapter.Attributes.Description("description")]
+    [WorkItemIds("globalId")]
+    [TestMethod]
+    public void testName()
+    {
         // See work item [globalId] for detailed steps description
         // Pre:
         //   preconditions
@@ -20,19 +25,21 @@ object JunitSnippet {
     }
     """
 
+    val comparator = { globalId: Long  -> "[WorkItemIds(\"$globalId\")]" }
 
-    val comparator = { globalId: Long  -> "@WorkItemIds(\"$globalId\")" }
 
-
-    fun getNewSnippetJunit(userObject: Any): String {
+    fun getNewSnippetMSTest(userObject: Any): String {
         val model = userObject as TmsNodeModel
         val builder = StringBuilder()
 
-        JUNIT_CODE_SNIPPET.lines().forEach { line ->
+        val testName = getTestName(model)
+        MSTEST_CODE_SNIPPET.lines().forEach { line ->
             var modifiedLine = line
                 .replace("testName",
-                    StringUtils.spacesToCamelCase(getTestName(model)))
+                    StringUtils.spacesToCamelCase(testName))
                 .replace("globalId", model.globalId.toString())
+                .replace("title_", testName)
+                .replace("displayName_", testName)
 
             modifiedLine = tryUpdateLineWithSteps(modifiedLine, model)
 
@@ -43,5 +50,4 @@ object JunitSnippet {
 
         return builder.toString().trimIndent()
     }
-
 }
