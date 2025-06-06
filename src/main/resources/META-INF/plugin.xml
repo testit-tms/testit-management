@@ -34,7 +34,7 @@
         <action id="ru.testit.management.SearchAllureAction"
                 class="ru.testit.management.actions.SearchAllureAction"
                 icon="AllIcons.Actions.Replace"
-                text="Search Allure methods">
+                text="Search Allure Methods">
         </action>
     </actions>
 </idea-plugin>

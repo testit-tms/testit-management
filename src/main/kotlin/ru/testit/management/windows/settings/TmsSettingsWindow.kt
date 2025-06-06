@@ -8,6 +8,7 @@ import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import ru.testit.management.clients.TmsClient
+import ru.testit.management.enums.FrameworkOption
 import ru.testit.management.utils.MessagesUtils
 import java.awt.event.ItemEvent
 import java.net.URL
@@ -70,7 +71,7 @@ class TmsSettingsWindow {
             }
             groupRowsRange("Settings") {
                 row("Framework") {
-                    val options = listOf("junit", "pytest")
+                    val options = listOf("junit", "pytest", "playwright", "mstest")
                     frameworkComboBox = comboBox<String>(options)
                     frameworkComboBox!!.component.selectedItem = _state.getFramework()
                         // .bindItem(_state::getFrameworkString, _state::setFrameworkString)

@@ -31,6 +31,10 @@ class TmsSettingsState : PersistentStateComponent<TmsSettingsState> {
             return FrameworkOption.PYTEST.toString()
         } else if (PlatformUtils.isIntelliJ()) {
             return FrameworkOption.JUNIT.toString()
+        } else if (PlatformUtils.isWebStorm()) {
+            return FrameworkOption.PLAYWRIGHT.toString()
+        } else if (PlatformUtils.isRider()) {
+            return FrameworkOption.MSTEST.toString()
         }
         return FrameworkOption.JUNIT.toString()
     }

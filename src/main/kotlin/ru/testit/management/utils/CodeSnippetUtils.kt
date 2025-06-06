@@ -5,6 +5,8 @@ import org.jsoup.safety.Safelist
 import ru.testit.client.model.StepModel
 import ru.testit.management.enums.FrameworkOption
 import ru.testit.management.snippet.JunitSnippet
+import ru.testit.management.snippet.MSTestSnippet
+import ru.testit.management.snippet.PlaywrightSnippet
 import ru.testit.management.snippet.PytestSnippet
 import ru.testit.management.windows.settings.TmsSettingsState
 import ru.testit.management.windows.tools.TmsNodeModel
@@ -16,6 +18,8 @@ object CodeSnippetUtils {
         val snippet = when (framework) {
             FrameworkOption.PYTEST.toString() -> PytestSnippet.getNewSnippetPytest(userObject)
             FrameworkOption.JUNIT.toString() -> JunitSnippet.getNewSnippetJunit(userObject)
+            FrameworkOption.MSTEST.toString() -> MSTestSnippet.getNewSnippetMSTest(userObject)
+            FrameworkOption.PLAYWRIGHT.toString() -> PlaywrightSnippet.getNewSnippetPlaywright(userObject)
             else -> JunitSnippet.getNewSnippetJunit(userObject)
         }
         return snippet
@@ -26,6 +30,8 @@ object CodeSnippetUtils {
         val comparator = when (framework) {
             FrameworkOption.PYTEST.toString() -> PytestSnippet.comparator
             FrameworkOption.JUNIT.toString() -> JunitSnippet.comparator
+            FrameworkOption.MSTEST.toString() -> MSTestSnippet.comparator
+            FrameworkOption.PLAYWRIGHT.toString() -> PlaywrightSnippet.comparator
             else -> JunitSnippet.comparator
         }
         return comparator
