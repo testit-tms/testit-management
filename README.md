@@ -20,6 +20,7 @@ project's work items and hierarchies, generate unit tests for selected work item
 | 5.1     | v1.0.12.1                 |
 | 5.2     | v1.0.13                   |
 | 5.2.2   | 1.1.0-TMS-5.2.2           |
+| 5.3     | 2.0.2-TMS-5.3             |
 | Cloud   | 2.1.0-TMS-CLOUD           |
 
 ## Download

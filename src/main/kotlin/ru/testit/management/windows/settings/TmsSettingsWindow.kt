@@ -71,7 +71,7 @@ class TmsSettingsWindow {
             }
             groupRowsRange("Settings") {
                 row("Framework") {
-                    val options = listOf("junit", "pytest", "playwright", "mstest")
+                    val options = FrameworkOption.values().map { it.toString() }
                     frameworkComboBox = comboBox<String>(options)
                     frameworkComboBox!!.component.selectedItem = _state.getFramework()
                         // .bindItem(_state::getFrameworkString, _state::setFrameworkString)
