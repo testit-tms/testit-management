@@ -5,15 +5,15 @@ import ru.testit.management.utils.CodeSnippetUtils.tryUpdateLineWithSteps
 import ru.testit.management.utils.StringUtils
 import ru.testit.management.windows.tools.TmsNodeModel
 
-object PlaywrightSnippet {
-    private const val PLAYWRIGHT_CODE_SNIPPET = """  
-    test('testName', () => {
-        testit.externalId('externalId');
-        testit.displayName('displayName_');
-        testit.title('title_');
-        testit.description('description');
-        testit.workItemIds(["globalId"]);
-        
+object XUnitSnippet {
+    private const val CODE_SNIPPET = """
+    [ExternalId("externalId")]
+    [Title("title_")]
+    [Description("description")]
+    [WorkItemIds("globalId")]
+    [TmsFact(DisplayName = "displayName_")]
+    public void testName()
+    {
         // See work item [globalId] for detailed steps description
         // Pre:
         //   preconditions
@@ -21,20 +21,21 @@ object PlaywrightSnippet {
         //   testSteps
         // Post:
         //   postconditions
-    });
+    }
     """
 
-    val comparator = { globalId: Long  -> "testit.workItemIds([\"$globalId\"]);" }
+    val comparator = { globalId: Long  -> "[WorkItemIds(\"$globalId\")]" }
 
 
-    fun getNewSnippetPlaywright(userObject: Any): String {
+    fun getNewSnippetXUnit(userObject: Any): String {
         val model = userObject as TmsNodeModel
         val builder = StringBuilder()
 
         val testName = getTestName(model)
-        PLAYWRIGHT_CODE_SNIPPET.lines().forEach { line ->
+        CODE_SNIPPET.lines().forEach { line ->
             var modifiedLine = line
-                .replace("testName", testName)
+                .replace("testName",
+                    StringUtils.spacesToCamelCase(testName))
                 .replace("globalId", model.globalId.toString())
                 .replace("title_", testName)
                 .replace("displayName_", testName)
