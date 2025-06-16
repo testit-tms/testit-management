@@ -6,14 +6,14 @@ import ru.testit.management.utils.CodeSnippetUtils.tryUpdateLineWithSteps
 import ru.testit.management.utils.StringUtils
 import ru.testit.management.windows.tools.TmsNodeModel
 
-object PytestSnippet {
-    private const val PYTEST_CODE_SNIPPET = """
-    @testit.externalId("externalId")
-    @testit.displayName("displayName_")
-    @testit.title("title_")
-    @testit.description("description")
-    @testit.workItemIds("globalId")
-    def testName(): 
+object RobotFrameworkSnippet {
+    private const val CODE_SNIPPET = """  
+    testName
+        [Tags]  testit.externalID:externalId
+        ...     testit.displayName:displayName_
+        ...     testit.title:title_
+        ...     testit.description:description
+        ...     testit.workitemsID:globalId
         # See work item [globalId] for detailed steps description
         # Pre:
         #   preconditions
@@ -21,24 +21,24 @@ object PytestSnippet {
         #   testSteps
         # Post:
         #   postconditions
-    
     """
 
-    val comparator = { globalId: Long  -> "@testit.workItemIds(\"$globalId\")" }
+    val comparator = { globalId: Long  -> "testit.workitemsID:$globalId" }
 
 
-    fun getNewSnippetPytest(userObject: Any): String {
+    fun getNewSnippetRobotFramework(userObject: Any): String {
         val model = userObject as TmsNodeModel
         val builder = StringBuilder()
 
         val testName = getTestName(model)
-        PYTEST_CODE_SNIPPET.lines().forEach { line ->
+        CODE_SNIPPET.lines().forEach { line ->
             var modifiedLine = line
-                .replace("testName",
-                    StringUtils.spacesToSnakeCase(testName))
+                .replace("testName", testName)
                 .replace("globalId", model.globalId.toString())
-                .replace("title_", testName)
-                .replace("displayName_", testName)
+                .replace("title_",
+                    StringUtils.spacesToSnakeCase(testName))
+                .replace("displayName_",
+                    StringUtils.spacesToSnakeCase(testName))
 
             modifiedLine = tryUpdateLineWithSteps(modifiedLine, model)
 
