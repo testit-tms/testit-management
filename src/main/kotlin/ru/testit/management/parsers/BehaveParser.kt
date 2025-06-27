@@ -4,27 +4,54 @@ import ru.testit.management.parsers.models.MatchInfo
 
 // TODO: move all regex patterns to the separate file
 // TODO: move all objects to the separate file
-object PytestParser {
+object BehaveParser {
     private const val ANNOTATION_SEPARATOR = "\\."
-    private const val EVERYTHING_IN_PARENTHESES = "\\([\\s\\S][^)]{1,}\\)"
+    private const val KEY_VALUE_SEPARATOR = ":"
+    private const val EVERYTHING_AFTER_ANNOTATION = "[^\\s]{1,}"
     private const val ALLURE_OBJECT = "allure"
     private const val ALLURE_METHOD = ALLURE_OBJECT + ANNOTATION_SEPARATOR
+    private const val ALLURE_LINK_LABEL_NAME = "epic"
+    private const val ALLURE_ISSUE_LABEL_NAME = "story"
+    private const val ALLURE_TMS_SUITE_LABEL_NAME = "parentSuite"
+    private const val ALLURE_LINK = ALLURE_METHOD + ALLURE_LINK_LABEL_NAME + EVERYTHING_AFTER_ANNOTATION
+    private const val ALLURE_ISSUE = ALLURE_METHOD + ALLURE_ISSUE_LABEL_NAME + EVERYTHING_AFTER_ANNOTATION
+    private const val ALLURE_TESTCASE = ALLURE_METHOD + ALLURE_TMS_SUITE_LABEL_NAME + EVERYTHING_AFTER_ANNOTATION
+    private const val ALLURE_EPIC_LABEL_NAME = "epic"
+    private const val ALLURE_STORY_LABEL_NAME = "story"
+    private const val ALLURE_PARENT_SUITE_LABEL_NAME = "parentSuite"
+    private const val ALLURE_SUITE_LABEL_NAME = "suite"
+    private const val ALLURE_SUB_SUITE_LABEL_NAME = "subSuite"
+    private const val ALLURE_PACKAGE_LABEL_NAME = "package"
+    private const val ALLURE_TEST_CLASS_LABEL_NAME = "testClass"
+    private const val ALLURE_TEST_METHOD_LABEL_NAME = "testMethod"
+    private const val LABEL_OTHER_FUNCTIONS_NAMES = "(?!" + ALLURE_EPIC_LABEL_NAME + "|" +
+            ALLURE_STORY_LABEL_NAME + "|" + ALLURE_PARENT_SUITE_LABEL_NAME + "|" + ALLURE_SUITE_LABEL_NAME + "|" +
+            ALLURE_SUB_SUITE_LABEL_NAME + "|" + ALLURE_PACKAGE_LABEL_NAME + "|" + ALLURE_TEST_CLASS_LABEL_NAME + "|" +
+            ALLURE_TEST_METHOD_LABEL_NAME + ")"
+    private const val ALLURE_LABEL = ALLURE_METHOD + "label" + ANNOTATION_SEPARATOR
+    private const val ALLURE_EPIC = ALLURE_LABEL + ALLURE_EPIC_LABEL_NAME + KEY_VALUE_SEPARATOR
+    private const val ALLURE_STORY = ALLURE_LABEL + ALLURE_STORY_LABEL_NAME + KEY_VALUE_SEPARATOR
+    private const val ALLURE_PARENT_SUITE = ALLURE_LABEL + ALLURE_PARENT_SUITE_LABEL_NAME + KEY_VALUE_SEPARATOR
+    private const val ALLURE_SUITE = ALLURE_LABEL + ALLURE_SUITE_LABEL_NAME + KEY_VALUE_SEPARATOR
+    private const val ALLURE_SUB_SUITE = ALLURE_LABEL + ALLURE_SUB_SUITE_LABEL_NAME + KEY_VALUE_SEPARATOR
+    private const val ALLURE_PACKAGE = ALLURE_LABEL + ALLURE_PACKAGE_LABEL_NAME + KEY_VALUE_SEPARATOR
+    private const val ALLURE_TEST_CLASS = ALLURE_LABEL + ALLURE_TEST_CLASS_LABEL_NAME + KEY_VALUE_SEPARATOR
+    private const val ALLURE_TEST_METHOD = ALLURE_LABEL + ALLURE_TEST_METHOD_LABEL_NAME + KEY_VALUE_SEPARATOR
+    private const val ALLURE_OTHER_FUNCTIONS_LABELS = ALLURE_LABEL + LABEL_OTHER_FUNCTIONS_NAMES +
+            EVERYTHING_AFTER_ANNOTATION
+
+    private const val LINK_NAME_ANNOTATION_NAME = "name"
+    private const val LINK_URL_ANNOTATION_NAME = "url"
+    private const val LINK_NAME_ANNOTATION = "(\\." +
+            "(?!$ALLURE_LINK_LABEL_NAME|$ALLURE_ISSUE_LABEL_NAME|$ALLURE_TMS_SUITE_LABEL_NAME)" +
+            "(?<$LINK_NAME_ANNOTATION_NAME>[^\\s.:]+)" +
+            ")?:"
+    private const val LINK_URL_ANNOTATION = ":(?<$LINK_URL_ANNOTATION_NAME>\\S+)"
+    private const val LABEL_VALUE_ANNOTATION_NAME = "value"
+    private const val LABEL_VALUE_ANNOTATION = "label[.|:](?<$LABEL_VALUE_ANNOTATION_NAME>\\S+)"
+
     private const val IMPORT_ALLURE_OBJECT = "import $ALLURE_OBJECT"
-    private const val ALLURE_TITLE = ALLURE_METHOD + "title"
-    private const val ALLURE_DESCRIPTION = ALLURE_METHOD + "description"
-    private const val ALLURE_DESCRIPTION_HTML = ALLURE_METHOD + "description_html"
-    private const val ALLURE_LINK = ALLURE_METHOD + "link" + EVERYTHING_IN_PARENTHESES
-    private const val ALLURE_ISSUE = ALLURE_METHOD + "issue" + EVERYTHING_IN_PARENTHESES
-    private const val ALLURE_TESTCASE = ALLURE_METHOD + "testcase" + EVERYTHING_IN_PARENTHESES
-    private const val ALLURE_TAG = ALLURE_METHOD + "tag"
-    private const val ALLURE_LABEL = ALLURE_METHOD + "label"
-    private const val ALLURE_ID = ALLURE_METHOD + "id"
-    private const val ALLURE_EPIC = ALLURE_METHOD + "epic"
-    private const val ALLURE_FEATURE = ALLURE_METHOD + "feature"
-    private const val ALLURE_STORY = ALLURE_METHOD + "story"
-    private const val ALLURE_PARENT_SUITE = ALLURE_METHOD + "parent_suite"
-    private const val ALLURE_SUITE = ALLURE_METHOD + "suite"
-    private const val ALLURE_SUB_SUITE = ALLURE_METHOD + "sub_suite"
+    private const val EVERYTHING_IN_PARENTHESES = "\\([\\s\\S][^)]{1,}\\)"
     private const val ALLURE_STEP = ALLURE_METHOD + "step"
     private const val ALLURE_DYNAMIC = ALLURE_METHOD + "dynamic" + ANNOTATION_SEPARATOR
     private const val ALLURE_DYNAMIC_TITLE = ALLURE_DYNAMIC + "title"
@@ -96,18 +123,19 @@ object PytestParser {
             "(?<=$PARAMETER_VALUE_PARAMETER_NAME)$ASSIGNMENT)" +
             "(?<$PARAMETER_VALUE_PARAMETER_NAME>$VARIABLE|$VALUE)"
 
-    private const val ANNOTATION_SEPARATOR_OBJECT = "."
-    private const val PARAMETERS_SEPARATOR_OBJECT = ", "
+    private const val TMS_LABELS = "@Labels="
+    private const val TMS_LINKS = "@Links="
+    private const val TMS_NAMESPACE = "@NameSpace="
+    private const val TMS_CLASSNAME = "@ClassName="
+    private const val TMS_DISPLAY_NAME = "@DisplayName="
+
     private const val TMS_OBJECT = "testit"
+    private const val METHOD_SEPARATOR_OBJECT = "."
+    private const val ANNOTATION_SEPARATOR_OBJECT = ","
+    private const val PARAMETERS_SEPARATOR_OBJECT = ", "
+    private const val TMS_METHOD_OBJECT = TMS_OBJECT + METHOD_SEPARATOR_OBJECT
     private const val IMPORT_TMS_OBJECT = "import $TMS_OBJECT"
-    private const val TMS_METHOD_OBJECT = TMS_OBJECT + ANNOTATION_SEPARATOR_OBJECT
-    private const val TMS_DISPLAY_NAME = TMS_METHOD_OBJECT + "displayName"
-    private const val TMS_DESCRIPTION = TMS_METHOD_OBJECT + "description"
-    private const val TMS_LABELS = TMS_METHOD_OBJECT + "labels"
     private const val TMS_STEP = TMS_METHOD_OBJECT + "step"
-    private const val TMS_LINKS = TMS_METHOD_OBJECT + "links"
-    private const val TMS_NAMESPACE = TMS_METHOD_OBJECT + "nameSpace"
-    private const val TMS_CLASSNAME = TMS_METHOD_OBJECT + "className"
     private const val TMS_ADD_DISPLAY_NAME = TMS_METHOD_OBJECT + "addDisplayName"
     private const val TMS_ADD_NAMESPACE = TMS_METHOD_OBJECT + "addNameSpace"
     private const val TMS_ADD_CLASSNAME = TMS_METHOD_OBJECT + "addClassName"
@@ -121,12 +149,7 @@ object PytestParser {
     private val patternActions: Map<Regex, Any> by lazy {
         mutableMapOf(
             Regex(IMPORT_ALLURE_OBJECT, RegexOption.MULTILINE) to IMPORT_TMS_OBJECT,
-            Regex(ALLURE_TITLE, RegexOption.MULTILINE) to TMS_DISPLAY_NAME,
-            Regex(ALLURE_DESCRIPTION, RegexOption.MULTILINE) to TMS_DESCRIPTION,
-            Regex(ALLURE_DESCRIPTION_HTML, RegexOption.MULTILINE) to TMS_DESCRIPTION,
-            Regex(ALLURE_TAG, RegexOption.MULTILINE) to TMS_LABELS,
-            Regex(ALLURE_LABEL, RegexOption.MULTILINE) to TMS_LABELS,
-            Regex(ALLURE_ID, RegexOption.MULTILINE) to TMS_LABELS,
+            Regex(ALLURE_OTHER_FUNCTIONS_LABELS, RegexOption.MULTILINE) to ::parseOtherFunctionsLabels,
             Regex(ALLURE_STEP, RegexOption.MULTILINE) to TMS_STEP,
             Regex(ALLURE_LINK, RegexOption.MULTILINE) to ::parseLinkAnnotation,
             Regex(ALLURE_ISSUE, RegexOption.MULTILINE) to ::parseLinkAnnotation,
@@ -135,8 +158,10 @@ object PytestParser {
             Regex(ALLURE_SUITE, RegexOption.MULTILINE) to TMS_NAMESPACE,
             Regex(ALLURE_SUB_SUITE, RegexOption.MULTILINE) to TMS_CLASSNAME,
             Regex(ALLURE_EPIC, RegexOption.MULTILINE) to TMS_NAMESPACE,
-            Regex(ALLURE_FEATURE, RegexOption.MULTILINE) to TMS_NAMESPACE,
             Regex(ALLURE_STORY, RegexOption.MULTILINE) to TMS_CLASSNAME,
+            Regex(ALLURE_PACKAGE, RegexOption.MULTILINE) to TMS_NAMESPACE,
+            Regex(ALLURE_TEST_CLASS, RegexOption.MULTILINE) to TMS_CLASSNAME,
+            Regex(ALLURE_TEST_METHOD, RegexOption.MULTILINE) to TMS_DISPLAY_NAME,
             Regex(ALLURE_DYNAMIC_TITLE, RegexOption.MULTILINE) to TMS_ADD_DISPLAY_NAME,
             Regex(ALLURE_DYNAMIC_DESCRIPTION, RegexOption.MULTILINE) to TMS_ADD_DESCRIPTION,
             Regex(ALLURE_DYNAMIC_DESCRIPTION_HTML, RegexOption.MULTILINE) to TMS_ADD_DESCRIPTION,
@@ -182,17 +207,26 @@ object PytestParser {
         throw Exception("No matching Allure pattern found in line \"$line\"")
     }
 
+    private fun parseOtherFunctionsLabels(matchInfo: MatchInfo): String
+    {
+        val valueMatch = Regex(LABEL_VALUE_ANNOTATION).find(matchInfo.text)
+            ?: throw Exception("Can't getting value from annotation ${matchInfo.text}")
+
+        val name = valueMatch.groups.get(LABEL_VALUE_ANNOTATION)?.value
+
+        return TMS_LABELS + name
+    }
+
     private fun parseLinkAnnotation(matchInfo: MatchInfo): String
     {
-        val urlMatch = Regex(LINK_URL_PARAMETER).find(matchInfo.text)
+        val urlMatch = Regex(LINK_URL_ANNOTATION).find(matchInfo.text)
             ?: throw Exception("Can't getting url from annotation ${matchInfo.text}")
-        val nameMatch = Regex(LINK_NAME_PARAMETER).find(matchInfo.text)
+        val nameMatch = Regex(LINK_NAME_ANNOTATION).find(matchInfo.text)
 
-        val url = urlMatch.groups.get(LINK_URL_PARAMETER_NAME)?.value
-        val name = nameMatch?.groups?.get(LINK_NAME_PARAMETER_NAME)?.value
-        val titleBlock = if (name != null) "${PARAMETERS_SEPARATOR_OBJECT}title=${name}" else ""
-
-        return "${TMS_LINKS}(url=${url}${titleBlock})"
+        val url = urlMatch.groups.get(LINK_URL_ANNOTATION_NAME)?.value
+        val name = nameMatch?.groups?.get(LINK_NAME_ANNOTATION_NAME)?.value
+        val titleBlock = if (name != null) "${ANNOTATION_SEPARATOR_OBJECT}\"title\":\"$name\"" else ""
+        return "$TMS_LINKS{\"url\":\"$url\"$titleBlock}"
     }
 
     private fun parseLinkMethod(matchInfo: MatchInfo): String
