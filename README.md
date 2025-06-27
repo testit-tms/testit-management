@@ -60,7 +60,7 @@ Double-click on the tree item opens an editor with the autotest's first line foc
 
 ### Search and replace Allure methods
 
-Click on the "Search Allure methods" button.
+You can see the documentation [here](docs/parsingAllureAnnotations/README.md).
 
 ## Contributing
 
