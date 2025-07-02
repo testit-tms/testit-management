@@ -10,12 +10,12 @@ object BehaveParser {
     private const val EVERYTHING_AFTER_ANNOTATION = "[^\\s]{1,}"
     private const val ALLURE_OBJECT = "allure"
     private const val ALLURE_METHOD = ALLURE_OBJECT + ANNOTATION_SEPARATOR
-    private const val ALLURE_LINK_LABEL_NAME = "epic"
-    private const val ALLURE_ISSUE_LABEL_NAME = "story"
-    private const val ALLURE_TMS_SUITE_LABEL_NAME = "parentSuite"
+    private const val ALLURE_LINK_LABEL_NAME = "link"
+    private const val ALLURE_ISSUE_LABEL_NAME = "issue"
+    private const val ALLURE_TMS_LABEL_NAME = "tms"
     private const val ALLURE_LINK = ALLURE_METHOD + ALLURE_LINK_LABEL_NAME + EVERYTHING_AFTER_ANNOTATION
     private const val ALLURE_ISSUE = ALLURE_METHOD + ALLURE_ISSUE_LABEL_NAME + EVERYTHING_AFTER_ANNOTATION
-    private const val ALLURE_TESTCASE = ALLURE_METHOD + ALLURE_TMS_SUITE_LABEL_NAME + EVERYTHING_AFTER_ANNOTATION
+    private const val ALLURE_TESTCASE = ALLURE_METHOD + ALLURE_TMS_LABEL_NAME + EVERYTHING_AFTER_ANNOTATION
     private const val ALLURE_EPIC_LABEL_NAME = "epic"
     private const val ALLURE_STORY_LABEL_NAME = "story"
     private const val ALLURE_PARENT_SUITE_LABEL_NAME = "parentSuite"
@@ -28,7 +28,7 @@ object BehaveParser {
             ALLURE_STORY_LABEL_NAME + "|" + ALLURE_PARENT_SUITE_LABEL_NAME + "|" + ALLURE_SUITE_LABEL_NAME + "|" +
             ALLURE_SUB_SUITE_LABEL_NAME + "|" + ALLURE_PACKAGE_LABEL_NAME + "|" + ALLURE_TEST_CLASS_LABEL_NAME + "|" +
             ALLURE_TEST_METHOD_LABEL_NAME + ")"
-    private const val ALLURE_LABEL = ALLURE_METHOD + "label" + ANNOTATION_SEPARATOR
+    private const val ALLURE_LABEL = ALLURE_METHOD + "label" + "[$ANNOTATION_SEPARATOR|$KEY_VALUE_SEPARATOR]"
     private const val ALLURE_EPIC = ALLURE_LABEL + ALLURE_EPIC_LABEL_NAME + KEY_VALUE_SEPARATOR
     private const val ALLURE_STORY = ALLURE_LABEL + ALLURE_STORY_LABEL_NAME + KEY_VALUE_SEPARATOR
     private const val ALLURE_PARENT_SUITE = ALLURE_LABEL + ALLURE_PARENT_SUITE_LABEL_NAME + KEY_VALUE_SEPARATOR
@@ -43,7 +43,7 @@ object BehaveParser {
     private const val LINK_NAME_ANNOTATION_NAME = "name"
     private const val LINK_URL_ANNOTATION_NAME = "url"
     private const val LINK_NAME_ANNOTATION = "(\\." +
-            "(?!$ALLURE_LINK_LABEL_NAME|$ALLURE_ISSUE_LABEL_NAME|$ALLURE_TMS_SUITE_LABEL_NAME)" +
+            "(?!$ALLURE_LINK_LABEL_NAME|$ALLURE_ISSUE_LABEL_NAME|$ALLURE_TMS_LABEL_NAME)" +
             "(?<$LINK_NAME_ANNOTATION_NAME>[^\\s.:]+)" +
             ")?:"
     private const val LINK_URL_ANNOTATION = ":(?<$LINK_URL_ANNOTATION_NAME>\\S+)"
@@ -123,11 +123,11 @@ object BehaveParser {
             "(?<=$PARAMETER_VALUE_PARAMETER_NAME)$ASSIGNMENT)" +
             "(?<$PARAMETER_VALUE_PARAMETER_NAME>$VARIABLE|$VALUE)"
 
-    private const val TMS_LABELS = "@Labels="
-    private const val TMS_LINKS = "@Links="
-    private const val TMS_NAMESPACE = "@NameSpace="
-    private const val TMS_CLASSNAME = "@ClassName="
-    private const val TMS_DISPLAY_NAME = "@DisplayName="
+    private const val TMS_LABELS = "Labels="
+    private const val TMS_LINKS = "Links="
+    private const val TMS_NAMESPACE = "NameSpace="
+    private const val TMS_CLASSNAME = "ClassName="
+    private const val TMS_DISPLAY_NAME = "DisplayName="
 
     private const val TMS_OBJECT = "testit"
     private const val METHOD_SEPARATOR_OBJECT = "."
@@ -200,7 +200,7 @@ object BehaveParser {
                         function(matchInfo)
                     }
                     // should be never called
-                    else -> throw IllegalStateException("Unknown action type in patternActions") 
+                    else -> throw IllegalStateException("Unknown action type in patternActions")
                 }
             }
         }
@@ -212,7 +212,7 @@ object BehaveParser {
         val valueMatch = Regex(LABEL_VALUE_ANNOTATION).find(matchInfo.text)
             ?: throw Exception("Can't getting value from annotation ${matchInfo.text}")
 
-        val name = valueMatch.groups.get(LABEL_VALUE_ANNOTATION)?.value
+        val name = valueMatch.groups.get(LABEL_VALUE_ANNOTATION_NAME)?.value
 
         return TMS_LABELS + name
     }
