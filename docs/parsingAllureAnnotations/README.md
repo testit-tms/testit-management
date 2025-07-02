@@ -1,5 +1,11 @@
 # Search and replace Allure methods
 
+## Supported
+
+- Pytest
+- Behave
+- RobotFramework
+
 ## Getting Started
 
 ### Configuration
