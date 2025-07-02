@@ -3,6 +3,7 @@ package ru.testit.management.utils
 import ru.testit.management.enums.FrameworkOption
 import ru.testit.management.parsers.PytestParser
 import ru.testit.management.parsers.RobotFrameworkParser
+import ru.testit.management.parsers.BehaveParser
 import ru.testit.management.parsers.models.MatchInfo
 import ru.testit.management.windows.settings.TmsSettingsState
 
@@ -12,6 +13,7 @@ object ParsingAnnotationsUtils {
         val patterns = when (framework) {
             FrameworkOption.PYTEST.toString() -> PytestParser.getPatterns()
             FrameworkOption.ROBOTFRAMEWORK.toString() -> RobotFrameworkParser.getPatterns()
+            FrameworkOption.BEHAVE.toString() -> BehaveParser.getPatterns()
             else -> PytestParser.getPatterns()
         }
         return patterns
@@ -22,6 +24,7 @@ object ParsingAnnotationsUtils {
         val tmsCode = when (framework) {
             FrameworkOption.PYTEST.toString() -> PytestParser.parse(allureCode, matchInfo)
             FrameworkOption.ROBOTFRAMEWORK.toString() -> RobotFrameworkParser.parse(allureCode, matchInfo)
+            FrameworkOption.BEHAVE.toString() -> BehaveParser.parse(allureCode, matchInfo)
             else -> PytestParser.parse(allureCode, matchInfo)
         }
         return tmsCode
