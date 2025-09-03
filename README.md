@@ -9,7 +9,8 @@ project's work items and hierarchies, generate unit tests for selected work item
 > Click the <kbd>Watch</kbd> button on the top to be notified about releases containing new features and fixes.
 
 
-### We added PyCharm and pytest support recently (1.0.12)! 
+### Now we support IDEA (and OpenIDE), PyCharm, Rider, Webstorm!
+- and many different testing frameworks for each of them.
 
 ## Compatibility
 
