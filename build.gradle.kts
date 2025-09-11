@@ -55,7 +55,7 @@ dependencies {
         // testFramework(TestFrameworkType.Platform)
 
     }
-    api(libs.okhttp)
+    api(libs.jakarta)
     implementation(kotlin("stdlib-jdk8"))
     implementation(libs.jsoup)
     implementation(libs.slf4j)
