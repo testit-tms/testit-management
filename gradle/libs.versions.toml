@@ -1,16 +1,17 @@
 [versions]
 # libraries
 jsoup = "1.17.2"
-okhttp = "4.12.0"
+jakarta = "3.0.0"
 slf4j = "2.0.13"
-testit-api = "2.2.0-TMS-CLOUD"
+testit-api = "2.2.3"
 
 # plugins
 kotlin = "2.0.0"
 
 [libraries]
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+jakarta = { group = "jakarta.ws.rs", name = "jakarta.ws.rs-api", version.ref = "jakarta" }
+
 slf4j = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
 testit-api = { group = "ru.testit", name = "testit-api-client", version.ref = "testit-api" }
 

@@ -32,13 +32,13 @@ object TmsClient {
         } catch (exception: Throwable) {
             return exception.message
         } finally {
-            client?.httpClient?.connectionPool?.evictAll()
+             client?.httpClient?.close()
         }
     }
 
     fun refresh() {
-        _projectSectionsApi?.apiClient?.httpClient?.connectionPool?.evictAll()
-        _workItemsApi?.apiClient?.httpClient?.connectionPool?.evictAll()
+        _projectSectionsApi?.apiClient?.httpClient?.close()
+        _workItemsApi?.apiClient?.httpClient?.close()
 
         val client = getNewApiClient()
 
@@ -105,12 +105,11 @@ object TmsClient {
         url: String = TmsSettingsState.instance.url,
         token: String = TmsSettingsState.instance.privateToken
     ): ApiClient {
-        val client = ApiClient()
+        val client = ApiClient(true)
 
         client.setBasePath(url)
         client.setApiKeyPrefix("PrivateToken")
         client.setApiKey(token)
-        client.setVerifyingSsl(false)
 
         return client
     }
