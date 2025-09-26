@@ -21,6 +21,8 @@
                 icon="/icons/tool_window/toolWindow.svg"
                 anchor="right"
                 secondary="false"/>
+        <notificationGroup id="TestItPluginNotifications"
+                           displayType="BALLOON"/>
     </extensions>
     <actions>
         <action id="ru.testit.management.OpenSettingsAction"

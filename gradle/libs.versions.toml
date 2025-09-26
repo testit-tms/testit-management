@@ -3,7 +3,7 @@
 jsoup = "1.17.2"
 jakarta = "3.0.0"
 slf4j = "2.0.13"
-testit-api = "2.2.4"
+testit-api = "0.7.6"
 
 # plugins
 kotlin = "2.0.0"
@@ -13,7 +13,7 @@ jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 jakarta = { group = "jakarta.ws.rs", name = "jakarta.ws.rs-api", version.ref = "jakarta" }
 
 slf4j = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
-testit-api = { group = "ru.testit", name = "testit-api-client", version.ref = "testit-api" }
+testit-api = { group = "ru.testit", name = "testit-api-client-kotlin", version.ref = "testit-api" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

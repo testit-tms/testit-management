@@ -63,6 +63,6 @@ class TmsMouseListener(project: Project, tree: JTree) : MouseListener {
     }
 
     private fun showPopup(event: MouseEvent) {
-        TmsPopupMenu(_tree).show(event.component, event.x, event.y)
+        TmsPopupMenu(_tree, _project).show(event.component, event.x, event.y)
     }
 }
