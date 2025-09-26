@@ -1,8 +1,8 @@
 package ru.testit.management.windows.tools
 
 import com.intellij.openapi.vfs.VirtualFile
-import ru.testit.client.model.StepModel
-import ru.testit.client.model.WorkItemEntityTypes
+import ru.testit.kotlin.client.models.StepModel
+import ru.testit.kotlin.client.models.WorkItemEntityTypes
 
 class TmsNodeModel(
     var name: String?,

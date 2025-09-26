@@ -17,7 +17,7 @@ class ClientTests {
             "URI is not absolute"
 
         // Act
-        val actual = TmsClient.getSettingsValidationErrorMsg("", "", "")
+        val actual = TmsClient("").getSettingsValidationErrorMsg("", "")
 
         // Assert
         assertEquals("Validation error message assertion failed!", expected, actual)

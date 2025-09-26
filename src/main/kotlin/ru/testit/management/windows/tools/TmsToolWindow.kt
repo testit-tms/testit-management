@@ -11,13 +11,14 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import org.jdesktop.swingx.JXTree
-import ru.testit.client.model.SectionModel
+import ru.testit.kotlin.client.models.SectionModel
 import ru.testit.management.clients.TmsClient
 import ru.testit.management.windows.differs.FileDiffWindow
 import ru.testit.management.parsers.models.MatchInfo
 import ru.testit.management.utils.CodeSnippetUtils
 import ru.testit.management.utils.MessagesUtils
 import ru.testit.management.utils.VirtualFileUtils
+import ru.testit.management.windows.settings.TmsSettingsState
 import java.awt.BorderLayout
 import java.awt.Component
 import javax.swing.*
@@ -32,6 +33,8 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
         }
     }
 
+    private val _state = TmsSettingsState.instance
+    private val client = TmsClient(_state.url)
     private var _tree: Component? = null
     private var _search: Component? = null
 
@@ -173,9 +176,8 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
     }
 
     private fun getRootTreeNode(project: Project): DefaultMutableTreeNode? {
-        TmsClient.refresh()
 
-        val sections = TmsClient.getSections()
+        val sections = client.getSections()
         val rootSection = sections.singleOrNull { s -> s.parentId == null }
         val rootTreeNode = getChildTreeNode(rootSection, project, sections)
 
@@ -205,7 +207,7 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
             }
         }
 
-        TmsClient.getWorkItemsBySectionId(parentSection.id).forEach { workItem ->
+        client.getWorkItemsBySectionId(parentSection.id).forEach { workItem ->
             val model = TmsNodeModel(
                 workItem.name,
                 workItem.globalId,

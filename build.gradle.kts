@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.jsoup)
     implementation(libs.slf4j)
     implementation(libs.testit.api)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     testImplementation(kotlin("test"))
 }
 

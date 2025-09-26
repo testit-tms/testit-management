@@ -118,7 +118,7 @@ class TmsSettingsWindow {
             return
         }
 
-        errorMsg = TmsClient.getSettingsValidationErrorMsg(projectId.orEmpty(), privateToken, url.orEmpty())
+        errorMsg = TmsClient(url.orEmpty()).getSettingsValidationErrorMsg(projectId.orEmpty(), privateToken)
         verifyLabel?.text = errorMsg ?: MessagesUtils.get("window.settings.validation.success.text")
     }
 
