@@ -14,7 +14,7 @@ class ClientTests {
     fun checkMessage() {
         // Arrange
         val expected =
-            "Expected URL scheme 'http' or 'https' but no scheme was found for /api/v..."
+            "URI is not absolute"
 
         // Act
         val actual = TmsClient.getSettingsValidationErrorMsg("", "", "")
