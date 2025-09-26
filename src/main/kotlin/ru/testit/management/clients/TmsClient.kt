@@ -66,6 +66,9 @@ class TmsClient(url: String) {
     }
 
     fun getSections(): Iterable<SectionModel> {
+        println("getSections:")
+        val startTime = System.currentTimeMillis()
+
         val sections = mutableSetOf<SectionModel>()
 
         try {
@@ -77,15 +80,24 @@ class TmsClient(url: String) {
         } catch (exception: Throwable) {
             _logger.severe { exception.message }
         }
+        val endTime = System.currentTimeMillis()
+        println("Затраченное время: ${endTime - startTime} мс")
 
         return sections
     }
 
     fun getWorkItemById(id: UUID): WorkItemModel {
-        return workItemsApi.getWorkItemById(id.toString(), null, null)
+        println("getWorkItemById:")
+        val startTime = System.currentTimeMillis()
+        val result = workItemsApi.getWorkItemById(id.toString(), null, null)
+        val endTime = System.currentTimeMillis()
+        println("Затраченное время: ${endTime - startTime} мс")
+        return result
     }
 
     fun getWorkItemsBySectionId(sectionId: UUID?): Iterable<WorkItemShortApiResult> {
+        println("getWorkItemsBySectionId:")
+        val startTime = System.currentTimeMillis()
 
         if (sectionId == null) {
             return listOf()
@@ -97,6 +109,8 @@ class TmsClient(url: String) {
             val workItemsList = workItemsApi.apiV2WorkItemsSearchPost(
                 workItemSelectApiModel = request
             )
+            val endTime = System.currentTimeMillis()
+            println("Затраченное время: ${endTime - startTime} мс")
             return workItemsList
         } catch (exception: Throwable) {
             _logger.severe { exception.message }

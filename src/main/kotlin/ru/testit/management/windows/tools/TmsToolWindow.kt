@@ -4,8 +4,6 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.components.JBLabel
@@ -16,9 +14,7 @@ import ru.testit.kotlin.client.models.WorkItemEntityTypes
 import ru.testit.management.clients.TmsClient
 import ru.testit.management.windows.differs.FileDiffWindow
 import ru.testit.management.parsers.models.MatchInfo
-import ru.testit.management.utils.CodeSnippetUtils
 import ru.testit.management.utils.MessagesUtils
-import ru.testit.management.utils.VirtualFileUtils
 import ru.testit.management.windows.settings.TmsSettingsState
 import java.awt.BorderLayout
 import java.awt.Component
@@ -220,7 +216,7 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
                 workItem.id
             )
 
-            parentSectionNode.add(DefaultMutableTreeNode(getModelWithFileLineModified(model, project)))
+            parentSectionNode.add(DefaultMutableTreeNode(model))
         }
 
         return parentSectionNode
@@ -245,39 +241,5 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
         }
 
         return root
-    }
-
-    private fun findTestByGlobalId(lines: MutableList<String>, globalId: Long): Int? {
-        val line: Int?
-        for (counter in lines.indices) {
-            if (lines[counter].contains(CodeSnippetUtils.getComparator()(globalId))) {
-                line = counter
-                return line
-            }
-        }
-        return null
-    }
-
-    private fun getModelWithFileLineModified(model: TmsNodeModel, project: Project): TmsNodeModel {
-        val globalId = model.globalId ?: return model
-        VirtualFileUtils.refresh(project)
-
-        for (file in VirtualFileUtils.projectJavaFiles) {
-            val lines = mutableListOf<String>()
-
-            runReadAction {
-                lines.addAll(FileDocumentManager.getInstance().getDocument(file)?.charsSequence?.lines().orEmpty())
-            }
-
-            val line: Int? = findTestByGlobalId(lines, globalId)
-            if (line != null) {
-                model.file = file
-                model.line = line
-
-                break
-            }
-        }
-
-        return model
     }
 }
