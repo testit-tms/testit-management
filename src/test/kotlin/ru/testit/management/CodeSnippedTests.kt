@@ -2,10 +2,11 @@ package ru.testit.management
 
 import kotlinx.collections.immutable.persistentSetOf
 import org.junit.jupiter.api.DisplayName
-import ru.testit.client.model.StepModel
+import ru.testit.kotlin.client.models.StepModel
 import ru.testit.management.snippet.JunitSnippet
 import ru.testit.management.utils.CodeSnippetUtils
 import ru.testit.management.windows.tools.TmsNodeModel
+import java.util.*
 import kotlin.test.DefaultAsserter.assertEquals
 import kotlin.test.Test
 
@@ -20,16 +21,13 @@ class CodeSnippedTests {
         val name = "Test name"
         val globalID = 12345L
 
-        val preModel = StepModel()
-        preModel.action = "Precondition text"
+        val preModel = StepModel(UUID.randomUUID(), action = "Precondition text")
         val pre = persistentSetOf(preModel)
 
-        val stepModel = StepModel()
-        stepModel.action = "Step text"
+        val stepModel = StepModel(UUID.randomUUID(), action = "Step text")
         val steps = persistentSetOf(stepModel)
 
-        val postModel = StepModel()
-        postModel.action = "Postcondition text"
+        val postModel = StepModel(UUID.randomUUID(), action = "Postcondition text")
         val post = persistentSetOf(postModel)
 
         val model = TmsNodeModel(name, globalID, pre, steps, post)

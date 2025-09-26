@@ -3,10 +3,7 @@ package ru.testit.management.clients
 import kotlinx.serialization.Contextual
 import ru.testit.kotlin.client.apis.*
 import ru.testit.kotlin.client.infrastructure.ApiClient
-import ru.testit.kotlin.client.models.SectionModel
-import ru.testit.kotlin.client.models.WorkItemFilterApiModel
-import ru.testit.kotlin.client.models.WorkItemModel
-import ru.testit.kotlin.client.models.WorkItemSelectApiModel
+import ru.testit.kotlin.client.models.*
 import ru.testit.management.windows.settings.TmsSettingsState
 import java.util.*
 import java.util.logging.Logger
@@ -84,29 +81,27 @@ class TmsClient(url: String) {
         return sections
     }
 
-    fun getWorkItemsBySectionId(sectionId: UUID?): Iterable<WorkItemModel> {
-        val workItems = mutableSetOf<WorkItemModel>()
+    fun getWorkItemById(id: UUID): WorkItemModel {
+        return workItemsApi.getWorkItemById(id.toString(), null, null)
+    }
+
+    fun getWorkItemsBySectionId(sectionId: UUID?): Iterable<WorkItemShortApiResult> {
 
         if (sectionId == null) {
-            return workItems
+            return listOf()
         }
 
         val filter = WorkItemFilterApiModel(sectionIds = setOf(sectionId), isDeleted = false)
-
         val request = WorkItemSelectApiModel(filter = filter)
-
         try {
-            workItemsApi.apiV2WorkItemsSearchPost(
+            val workItemsList = workItemsApi.apiV2WorkItemsSearchPost(
                 workItemSelectApiModel = request
-            ).forEach { workItem ->
-                workItemsApi
-                    .getWorkItemById(workItem.id.toString(), null, null)
-                    .let { workItems.add(it) }
-            }
+            )
+            return workItemsList
         } catch (exception: Throwable) {
             _logger.severe { exception.message }
         }
 
-        return workItems
+        return listOf()
     }
 }
