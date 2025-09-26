@@ -12,7 +12,7 @@ object PytestOrNoseSnippet {
     @testit.title("title_")
     @testit.description("description")
     @testit.workItemIds("globalId")
-    def testName(): 
+    def test_testName(): 
         # See work item [globalId] for detailed steps description
         # Pre:
         #   preconditions
@@ -34,7 +34,7 @@ object PytestOrNoseSnippet {
         CODE_SNIPPET.lines().forEach { line ->
             var modifiedLine = line
                 .replace("testName",
-                    StringUtils.spacesToSnakeCase(testName))
+                    StringUtils.spacesToSnakeCase(testName).lowercase())
                 .replace("globalId", model.globalId.toString())
                 .replace("title_", testName)
                 .replace("displayName_", testName)
