@@ -12,7 +12,7 @@ object PytestOrNoseSnippet {
     @testit.title("title_")
     @testit.description("description")
     @testit.workItemIds("globalId")
-    def test_testName(): 
+    def test_testName():
         # See work item [globalId] for detailed steps description
         # Pre:
         #   preconditions
