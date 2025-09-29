@@ -4,20 +4,18 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import org.jdesktop.swingx.JXTree
-import ru.testit.client.model.SectionModel
+import ru.testit.kotlin.client.models.SectionModel
+import ru.testit.kotlin.client.models.WorkItemEntityTypes
 import ru.testit.management.clients.TmsClient
 import ru.testit.management.windows.differs.FileDiffWindow
 import ru.testit.management.parsers.models.MatchInfo
-import ru.testit.management.utils.CodeSnippetUtils
 import ru.testit.management.utils.MessagesUtils
-import ru.testit.management.utils.VirtualFileUtils
+import ru.testit.management.windows.settings.TmsSettingsState
 import java.awt.BorderLayout
 import java.awt.Component
 import javax.swing.*
@@ -32,6 +30,8 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
         }
     }
 
+    private val _state = TmsSettingsState.instance
+    private val client = TmsClient(_state.url)
     private var _tree: Component? = null
     private var _search: Component? = null
 
@@ -173,9 +173,8 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
     }
 
     private fun getRootTreeNode(project: Project): DefaultMutableTreeNode? {
-        TmsClient.refresh()
 
-        val sections = TmsClient.getSections()
+        val sections = client.getSections()
         val rootSection = sections.singleOrNull { s -> s.parentId == null }
         val rootTreeNode = getChildTreeNode(rootSection, project, sections)
 
@@ -205,18 +204,19 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
             }
         }
 
-        TmsClient.getWorkItemsBySectionId(parentSection.id).forEach { workItem ->
+        client.getWorkItemsBySectionId(parentSection.id).forEach { workItem ->
             val model = TmsNodeModel(
                 workItem.name,
                 workItem.globalId,
-                workItem.preconditionSteps,
-                workItem.steps,
-                workItem.postconditionSteps,
-                workItem.entityTypeName,
+                null,
+                null,
+                null,
+                WorkItemEntityTypes.valueOf(workItem.entityTypeName),
                 workItem.isAutomated,
+                workItem.id
             )
 
-            parentSectionNode.add(DefaultMutableTreeNode(getModelWithFileLineModified(model, project)))
+            parentSectionNode.add(DefaultMutableTreeNode(model))
         }
 
         return parentSectionNode
@@ -241,39 +241,5 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
         }
 
         return root
-    }
-
-    private fun findTestByGlobalId(lines: MutableList<String>, globalId: Long): Int? {
-        val line: Int?
-        for (counter in lines.indices) {
-            if (lines[counter].contains(CodeSnippetUtils.getComparator()(globalId))) {
-                line = counter
-                return line
-            }
-        }
-        return null
-    }
-
-    private fun getModelWithFileLineModified(model: TmsNodeModel, project: Project): TmsNodeModel {
-        val globalId = model.globalId ?: return model
-        VirtualFileUtils.refresh(project)
-
-        for (file in VirtualFileUtils.projectJavaFiles) {
-            val lines = mutableListOf<String>()
-
-            runReadAction {
-                lines.addAll(FileDocumentManager.getInstance().getDocument(file)?.charsSequence?.lines().orEmpty())
-            }
-
-            val line: Int? = findTestByGlobalId(lines, globalId)
-            if (line != null) {
-                model.file = file
-                model.line = line
-
-                break
-            }
-        }
-
-        return model
     }
 }

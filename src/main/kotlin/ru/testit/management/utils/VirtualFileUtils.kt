@@ -20,6 +20,7 @@ object VirtualFileUtils {
     val projectJavaFiles = mutableSetOf<VirtualFile>()
 
     fun refresh(project: Project) {
+        var startTime = System.currentTimeMillis()
         projectJavaFiles.clear()
 
         runReadAction {
@@ -29,6 +30,8 @@ object VirtualFileUtils {
                 )
             )
         }
+        var endTime = System.currentTimeMillis()
+        println("Затраченное на refresh index время: ${endTime - startTime} мс")
     }
 
     fun replaceMatches(
