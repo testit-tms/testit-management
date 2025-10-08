@@ -10,28 +10,66 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
+import ru.testit.management.enums.ExtOption
+import ru.testit.management.enums.FrameworkOption
 import ru.testit.management.parsers.models.FileInfo
 import ru.testit.management.parsers.models.MatchInfo
 import ru.testit.management.parsers.models.ReplacementInfo
+import ru.testit.management.windows.settings.TmsSettingsState
 import ru.testit.management.windows.tools.CheckBoxNode
+import ru.testit.management.windows.tools.TmsNodeModel
 import javax.swing.tree.DefaultMutableTreeNode
 
 object VirtualFileUtils {
-    val projectJavaFiles = mutableSetOf<VirtualFile>()
+    private val projectFiles = mutableSetOf<VirtualFile>()
 
-    fun refresh(project: Project) {
-        var startTime = System.currentTimeMillis()
-        projectJavaFiles.clear()
+    fun refreshFileLineForModel(model: TmsNodeModel, project: Project): TmsNodeModel {
+        model.file = null
+        model.line = null
+
+        val globalId = model.globalId ?: return model
+        refreshFiles(project)
+
+        for (file in projectFiles) {
+            val lines = mutableListOf<String>()
+
+            runReadAction {
+                lines.addAll(FileDocumentManager.getInstance().getDocument(file)?.charsSequence?.lines().orEmpty())
+            }
+
+            val line: Int? = findTestByGlobalId(lines, globalId)
+            if (line != null) {
+                model.file = file
+                model.line = line
+
+                break
+            }
+        }
+
+        return model
+    }
+
+    private fun refreshFiles(project: Project) {
+        projectFiles.clear()
 
         runReadAction {
-            projectJavaFiles.addAll(
+            projectFiles.addAll(
                 FilenameIndex.getAllFilesByExt(
-                    project, "java", GlobalSearchScope.projectScope(project)
+                    project, getExt(), GlobalSearchScope.projectScope(project)
                 )
             )
         }
-        var endTime = System.currentTimeMillis()
-        println("Затраченное на refresh index время: ${endTime - startTime} мс")
+    }
+
+    private fun findTestByGlobalId(lines: MutableList<String>, globalId: Long): Int? {
+        val line: Int?
+        for (counter in lines.indices) {
+            if (lines[counter].contains(CodeSnippetUtils.getComparator()(globalId))) {
+                line = counter
+                return line
+            }
+        }
+        return null
     }
 
     fun replaceMatches(
@@ -47,6 +85,28 @@ object VirtualFileUtils {
         }
 
         return allUpdateFiles
+    }
+
+    private fun getExt(): String {
+        val framework: String? = TmsSettingsState.instance.getFramework()
+        return when (framework) {
+            FrameworkOption.BEHAVE.toString() -> ExtOption.GHERKIN.toString()
+            FrameworkOption.NOSE.toString() -> ExtOption.PYTHON.toString()
+            FrameworkOption.PYTEST.toString() -> ExtOption.PYTHON.toString()
+            FrameworkOption.ROBOTFRAMEWORK.toString() -> ExtOption.ROBOT.toString()
+            FrameworkOption.JUNIT.toString() -> ExtOption.JAVA.toString()
+            FrameworkOption.MSTEST.toString() -> ExtOption.CSHARP.toString()
+            FrameworkOption.NUNIT.toString() -> ExtOption.CSHARP.toString()
+            FrameworkOption.XUNIT.toString() -> ExtOption.CSHARP.toString()
+            FrameworkOption.SPECFLOW.toString() -> ExtOption.GHERKIN.toString()
+            FrameworkOption.CODECEPTJS.toString() -> ExtOption.TYPESCRIPT.toString()
+            FrameworkOption.CUCUMBER.toString() -> ExtOption.GHERKIN.toString()
+            FrameworkOption.JEST.toString() -> ExtOption.TYPESCRIPT.toString()
+            FrameworkOption.MOCHA.toString() -> ExtOption.TYPESCRIPT.toString()
+            FrameworkOption.PLAYWRIGHT.toString() -> ExtOption.TYPESCRIPT.toString()
+            FrameworkOption.TESTCAFE.toString() -> ExtOption.TYPESCRIPT.toString()
+            else -> ExtOption.JAVA.toString()
+        }
     }
 
     //TODO: refactoring

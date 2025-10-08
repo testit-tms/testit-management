@@ -169,5 +169,3 @@ tasks {
         useJUnitPlatform()
     }
 }
-
-
