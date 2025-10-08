@@ -21,7 +21,7 @@ object CodeSnippetUtils {
 
     fun getNewSnippet(userObject: Any): String {
         val framework: String? = TmsSettingsState.instance.getFramework()
-        val snippet = when (framework) {
+        return when (framework) {
             FrameworkOption.BEHAVE.toString() -> GherkinSnippet.getNewSnippetCucumberOrBehaveOrSpecFlow(userObject)
             FrameworkOption.NOSE.toString() -> PytestOrNoseSnippet.getNewSnippetPytestOrNose(userObject)
             FrameworkOption.PYTEST.toString() -> PytestOrNoseSnippet.getNewSnippetPytestOrNose(userObject)
@@ -39,12 +39,11 @@ object CodeSnippetUtils {
             FrameworkOption.TESTCAFE.toString() -> TestCafeSnippet.getNewSnippetTestCafe(userObject)
             else -> JunitSnippet.getNewSnippetJunit(userObject)
         }
-        return snippet
     }
 
     fun getComparator(): (Long) -> String {
         val framework: String? = TmsSettingsState.instance.getFramework()
-        val comparator = when (framework) {
+        return when (framework) {
             FrameworkOption.BEHAVE.toString() -> GherkinSnippet.comparator
             FrameworkOption.NOSE.toString() -> PytestOrNoseSnippet.comparator
             FrameworkOption.PYTEST.toString() -> PytestOrNoseSnippet.comparator
@@ -62,7 +61,6 @@ object CodeSnippetUtils {
             FrameworkOption.TESTCAFE.toString() -> TestCafeSnippet.comparator
             else -> JunitSnippet.comparator
         }
-        return comparator
     }
 
     fun getTestName(model: TmsNodeModel): String {

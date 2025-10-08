@@ -2,8 +2,6 @@ package ru.testit.management.windows.tools
 
 import com.intellij.icons.AllIcons
 import com.intellij.notification.NotificationGroupManager
-import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
@@ -11,7 +9,6 @@ import ru.testit.management.clients.TmsClient
 import ru.testit.management.utils.ClipboardUtils
 import ru.testit.management.utils.CodeSnippetUtils
 import ru.testit.management.utils.MessagesUtils
-import ru.testit.management.utils.VirtualFileUtils
 import ru.testit.management.windows.settings.TmsSettingsState
 import javax.swing.JMenuItem
 import javax.swing.JTree
@@ -46,53 +43,10 @@ class TmsPopupMenu(tree: JTree, project: Project) : JBPopupMenu() {
                 model.steps = fullModel.steps
                 model.postconditions = fullModel.postconditionSteps
 
-                var startTime = System.currentTimeMillis()
-                model = getModelWithFileLineModified(model, project!!)
-                var endTime = System.currentTimeMillis()
-                println("Затраченное на индексацию строки время:  ${endTime - startTime} мс")
-
-                node.userObject = model
                 ClipboardUtils.copyToClipboard(CodeSnippetUtils.getNewSnippet(node.userObject))
                 showSimpleNotification(project);
             }
         }
-    }
-
-
-    private fun getModelWithFileLineModified(model: TmsNodeModel, project: Project): TmsNodeModel {
-        val globalId = model.globalId ?: return model
-        VirtualFileUtils.refresh(project)
-
-        // TODO: сделать зависимость .ext от выбранного в настройках фреймворка
-        println("Всего файлов с нужным ext: " + VirtualFileUtils.projectJavaFiles.count())
-        for (file in VirtualFileUtils.projectJavaFiles) {
-            val lines = mutableListOf<String>()
-
-            runReadAction {
-                lines.addAll(FileDocumentManager.getInstance().getDocument(file)?.charsSequence?.lines().orEmpty())
-            }
-
-            val line: Int? = findTestByGlobalId(lines, globalId)
-            if (line != null) {
-                model.file = file
-                model.line = line
-
-                break
-            }
-        }
-
-        return model
-    }
-
-    private fun findTestByGlobalId(lines: MutableList<String>, globalId: Long): Int? {
-        val line: Int?
-        for (counter in lines.indices) {
-            if (lines[counter].contains(CodeSnippetUtils.getComparator()(globalId))) {
-                line = counter
-                return line
-            }
-        }
-        return null
     }
 
     private fun showSimpleNotification(project: Project?) {

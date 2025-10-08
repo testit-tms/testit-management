@@ -4,6 +4,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import ru.testit.management.utils.VirtualFileUtils
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import javax.swing.JTree
@@ -41,9 +42,11 @@ class TmsMouseListener(project: Project, tree: JTree) : MouseListener {
 
     private fun tryOpenTest() {
         val node = _tree.getLastSelectedPathComponent() as DefaultMutableTreeNode
-        val model = node.userObject as TmsNodeModel
+        var model = node.userObject as TmsNodeModel
 
         var descriptor: OpenFileDescriptor? = null
+
+        model = VirtualFileUtils.refreshFileLineForModel(model, _project)
 
         if (model.file != null && model.line != null) {
             descriptor = OpenFileDescriptor(
