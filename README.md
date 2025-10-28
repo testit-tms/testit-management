@@ -25,7 +25,7 @@ project's work items and hierarchies, generate unit tests for selected work item
 | 5.4     | 2.1.3-TMS-5.4             |
 | 5.4.1   | 2.1.5-TMS-5.4.1           |
 | 5.5     | 2.2.2-TMS-5.5             |
-| Cloud   | 2.2.1                     |
+| Cloud   | 2.2.3                     |
 
 ## Download
 
