@@ -146,7 +146,7 @@ object VirtualFileUtils {
 
                 if (start >= 0 && end <= textBuilder.length) {
                     val originalMatch = textBuilder.substring(start, end)
-                    val replacement = ParsingAnnotationsUtils.parse(originalMatch, matchInfo)
+                    val replacement = ParsingAnnotationsUtils.parse(originalMatch)
                     offsetAdjustment += replacement.length - (end - start)
 
                     matchesInfos.add(matchInfo)
