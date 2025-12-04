@@ -5,6 +5,7 @@ import ru.testit.management.parsers.PytestParser
 import ru.testit.management.parsers.RobotFrameworkParser
 import ru.testit.management.parsers.BehaveParser
 import ru.testit.management.parsers.JUnitParser
+import ru.testit.management.parsers.PlaywrightParser
 import ru.testit.management.windows.settings.TmsSettingsState
 
 object ParsingAnnotationsUtils {
@@ -15,6 +16,7 @@ object ParsingAnnotationsUtils {
             FrameworkOption.ROBOTFRAMEWORK.toString() -> RobotFrameworkParser.getPatterns()
             FrameworkOption.BEHAVE.toString() -> BehaveParser.getPatterns()
             FrameworkOption.JUNIT.toString() -> JUnitParser.getPatterns()
+            FrameworkOption.PLAYWRIGHT.toString() -> PlaywrightParser.getPatterns()
             else -> PytestParser.getPatterns()
         }
         return patterns
@@ -27,6 +29,7 @@ object ParsingAnnotationsUtils {
             FrameworkOption.ROBOTFRAMEWORK.toString() -> RobotFrameworkParser.parse(allureCode)
             FrameworkOption.BEHAVE.toString() -> BehaveParser.parse(allureCode)
             FrameworkOption.JUNIT.toString() -> JUnitParser.parse(allureCode)
+            FrameworkOption.PLAYWRIGHT.toString() -> PlaywrightParser.parse(allureCode)
             else -> PytestParser.parse(allureCode)
         }
         return tmsCode

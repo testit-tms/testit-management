@@ -49,30 +49,30 @@ object PytestParser {
         return patternActions.keys.toList()
     }
 
-    fun parse(content: String): String
+    fun parse(code: String): String
     {
         for ((pattern, action) in patternActions) {
-            if (pattern.matches(content)) {
+            if (pattern.matches(code)) {
                 return when (action) {
                     is String -> action
                     is Function1<*, *> -> {
                         @Suppress("UNCHECKED_CAST")
                         val function = action as (String) -> String
-                        function(content)
+                        function(code)
                     }
                     // should be never called
                     else -> throw IllegalStateException("Unknown action type in patternActions") 
                 }
             }
         }
-        throw Exception("No matching Allure pattern found in line \"$content\"")
+        throw Exception("No matching Allure pattern found in line \"$code\"")
     }
 
-    private fun parseLinkAnnotation(content: String): String
+    private fun parseLinkAnnotation(code: String): String
     {
-        val urlMatch = Regex(PytestRegexp.LINK_URL_PARAMETER).find(content)
-            ?: throw Exception("Can't getting url from annotation \"$content\"")
-        val nameMatch = Regex(PytestRegexp.LINK_NAME_PARAMETER).find(content)
+        val urlMatch = Regex(PytestRegexp.LINK_URL_PARAMETER).find(code)
+            ?: throw Exception("Can't getting url from annotation \"$code\"")
+        val nameMatch = Regex(PytestRegexp.LINK_NAME_PARAMETER).find(code)
 
         val url = urlMatch.groups.get(PytestRegexp.LINK_URL_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(PytestRegexp.LINK_NAME_PARAMETER_NAME)?.value
@@ -81,11 +81,11 @@ object PytestParser {
         return "${PytestRegexp.TMS_LINKS}(url=${url}${titleBlock})"
     }
 
-    private fun parseLinkMethod(content: String): String
+    private fun parseLinkMethod(code: String): String
     {
-        val urlMatch = Regex(PytestRegexp.LINK_URL_PARAMETER).find(content)
-            ?: throw Exception("Can't getting url from annotation \"$content\"")
-        val nameMatch = Regex(PytestRegexp.LINK_NAME_PARAMETER).find(content)
+        val urlMatch = Regex(PytestRegexp.LINK_URL_PARAMETER).find(code)
+            ?: throw Exception("Can't getting url from annotation \"$code\"")
+        val nameMatch = Regex(PytestRegexp.LINK_NAME_PARAMETER).find(code)
 
         val url = urlMatch.groups.get(PytestRegexp.LINK_URL_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(PytestRegexp.LINK_NAME_PARAMETER_NAME)?.value
@@ -94,11 +94,11 @@ object PytestParser {
         return "${PytestRegexp.TMS_ADD_LINKS}(url=${url}${titleBlock})"
     }
 
-    private fun parseWriteAttachMethod(content: String): String
+    private fun parseWriteAttachMethod(code: String): String
     {
-        val bodyMatch = Regex(PytestRegexp.ATTACHMENT_BODY_PARAMETER).find(content)
-            ?: throw Exception("Can't getting body from method \"$content\"")
-        val nameMatch = Regex(PytestRegexp.ATTACHMENT_NAME_PARAMETER).find(content)
+        val bodyMatch = Regex(PytestRegexp.ATTACHMENT_BODY_PARAMETER).find(code)
+            ?: throw Exception("Can't getting body from method \"$code\"")
+        val nameMatch = Regex(PytestRegexp.ATTACHMENT_NAME_PARAMETER).find(code)
 
         val body = bodyMatch.groups.get(PytestRegexp.ATTACHMENT_BODY_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(PytestRegexp.ATTACHMENT_NAME_PARAMETER_NAME)?.value
@@ -107,11 +107,11 @@ object PytestParser {
         return "${PytestRegexp.TMS_ADD_ATTACHMENTS}(${body}${PytestRegexp.PARAMETERS_SEPARATOR_OBJECT}is_text=True${nameBlock})"
     }
 
-    private fun parseReadAttachMethod(content: String): String
+    private fun parseReadAttachMethod(code: String): String
     {
-        val sourceMatch = Regex(PytestRegexp.ATTACHMENT_SOURCE_PARAMETER).find(content)
-            ?: throw Exception("Can't getting source from method \"$content\"")
-        val nameMatch = Regex(PytestRegexp.ATTACHMENT_NAME_PARAMETER).find(content)
+        val sourceMatch = Regex(PytestRegexp.ATTACHMENT_SOURCE_PARAMETER).find(code)
+            ?: throw Exception("Can't getting source from method \"$code\"")
+        val nameMatch = Regex(PytestRegexp.ATTACHMENT_NAME_PARAMETER).find(code)
 
         val source = sourceMatch.groups.get(PytestRegexp.ATTACHMENT_SOURCE_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(PytestRegexp.ATTACHMENT_NAME_PARAMETER_NAME)?.value
@@ -120,12 +120,12 @@ object PytestParser {
         return "${PytestRegexp.TMS_ADD_ATTACHMENTS}(${source}${nameBlock})"
     }
 
-    private fun parseParameterMethod(content: String): String
+    private fun parseParameterMethod(code: String): String
     {
-        val nameMatch = Regex(PytestRegexp.PARAMETER_NAME_PARAMETER).find(content)
-            ?: throw Exception("Can't getting name from method \"$content\"")
-        val valueMatch = Regex(PytestRegexp.PARAMETER_VALUE_PARAMETER).find(content)
-            ?: throw Exception("Can't getting value from method \"$content\"")
+        val nameMatch = Regex(PytestRegexp.PARAMETER_NAME_PARAMETER).find(code)
+            ?: throw Exception("Can't getting name from method \"$code\"")
+        val valueMatch = Regex(PytestRegexp.PARAMETER_VALUE_PARAMETER).find(code)
+            ?: throw Exception("Can't getting value from method \"$code\"")
 
         val name = nameMatch.groups.get(PytestRegexp.PARAMETER_NAME_PARAMETER_NAME)?.value
         val value = valueMatch.groups.get(PytestRegexp.PARAMETER_VALUE_PARAMETER_NAME)?.value
