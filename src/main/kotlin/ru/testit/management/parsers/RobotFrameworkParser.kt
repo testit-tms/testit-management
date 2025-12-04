@@ -48,50 +48,50 @@ object RobotFrameworkParser {
         return patternActions.keys.toList()
     }
 
-    fun parse(content: String): String
+    fun parse(code: String): String
     {
         for ((pattern, action) in patternActions) {
-            if (pattern.matches(content)) {
+            if (pattern.matches(code)) {
                 return when (action) {
                     is String -> action
                     is Function1<*, *> -> {
                         @Suppress("UNCHECKED_CAST")
                         val function = action as (String) -> String
-                        function(content)
+                        function(code)
                     }
                     // should be never called
                     else -> throw IllegalStateException("Unknown action type in patternActions")
                 }
             }
         }
-        throw Exception("No matching Allure pattern found in line \"$content\"")
+        throw Exception("No matching Allure pattern found in line \"$code\"")
     }
 
-    private fun parseOtherFunctionsLabels(content: String): String
+    private fun parseOtherFunctionsLabels(code: String): String
     {
-        val valueMatch = Regex(RobotFrameworkRegexp.LABEL_VALUE_ANNOTATION).find(content)
-            ?: throw Exception("Can't getting value from annotation \"$content\"")
+        val valueMatch = Regex(RobotFrameworkRegexp.LABEL_VALUE_ANNOTATION).find(code)
+            ?: throw Exception("Can't getting value from annotation \"$code\"")
 
         val name = valueMatch.groups.get(RobotFrameworkRegexp.LABEL_VALUE_ANNOTATION_NAME)?.value
 
         return "${RobotFrameworkRegexp.TMS_LABELS}\${{['$name']}}"
     }
 
-    private fun parseIdLabel(content: String): String
+    private fun parseIdLabel(code: String): String
     {
-        val valueMatch = Regex(RobotFrameworkRegexp.LABEL_ID_VALUE_ANNOTATION).find(content)
-            ?: throw Exception("Can't getting value from annotation \"$content\"")
+        val valueMatch = Regex(RobotFrameworkRegexp.LABEL_ID_VALUE_ANNOTATION).find(code)
+            ?: throw Exception("Can't getting value from annotation \"$code\"")
 
         val name = valueMatch.groups.get(RobotFrameworkRegexp.LABEL_VALUE_ANNOTATION_NAME)?.value
 
         return "${RobotFrameworkRegexp.TMS_LABELS}\${{['$name']}}"
     }
 
-    private fun parseLinkAnnotation(content: String): String
+    private fun parseLinkAnnotation(code: String): String
     {
-        val urlMatch = Regex(RobotFrameworkRegexp.LINK_URL_ANNOTATION).find(content)
-            ?: throw Exception("Can't getting url from annotation \"$content\"")
-        val nameMatch = Regex(RobotFrameworkRegexp.LINK_NAME_ANNOTATION).find(content)
+        val urlMatch = Regex(RobotFrameworkRegexp.LINK_URL_ANNOTATION).find(code)
+            ?: throw Exception("Can't getting url from annotation \"$code\"")
+        val nameMatch = Regex(RobotFrameworkRegexp.LINK_NAME_ANNOTATION).find(code)
 
         val url = urlMatch.groups.get(RobotFrameworkRegexp.LINK_URL_ANNOTATION_NAME)?.value
         val name = nameMatch?.groups?.get(RobotFrameworkRegexp.LINK_NAME_ANNOTATION_NAME)?.value
@@ -99,11 +99,11 @@ object RobotFrameworkParser {
         return "${RobotFrameworkRegexp.TMS_LINKS}\${{{\"url\":\"$url\"$titleBlock}}}"
     }
 
-    private fun parseLinkMethod(content: String): String
+    private fun parseLinkMethod(code: String): String
     {
-        val urlMatch = Regex(RobotFrameworkRegexp.LINK_URL_PARAMETER).find(content)
-            ?: throw Exception("Can't getting url from annotation \"$content\"")
-        val nameMatch = Regex(RobotFrameworkRegexp.LINK_NAME_PARAMETER).find(content)
+        val urlMatch = Regex(RobotFrameworkRegexp.LINK_URL_PARAMETER).find(code)
+            ?: throw Exception("Can't getting url from annotation \"$code\"")
+        val nameMatch = Regex(RobotFrameworkRegexp.LINK_NAME_PARAMETER).find(code)
 
         val url = urlMatch.groups.get(RobotFrameworkRegexp.LINK_URL_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(RobotFrameworkRegexp.LINK_NAME_PARAMETER_NAME)?.value
@@ -112,11 +112,11 @@ object RobotFrameworkParser {
         return "${RobotFrameworkRegexp.TMS_ADD_LINKS}(url=${url}${titleBlock})"
     }
 
-    private fun parseWriteAttachMethod(content: String): String
+    private fun parseWriteAttachMethod(code: String): String
     {
-        val bodyMatch = Regex(RobotFrameworkRegexp.ATTACHMENT_BODY_PARAMETER).find(content)
-            ?: throw Exception("Can't getting body from method \"$content\"")
-        val nameMatch = Regex(RobotFrameworkRegexp.ATTACHMENT_NAME_PARAMETER).find(content)
+        val bodyMatch = Regex(RobotFrameworkRegexp.ATTACHMENT_BODY_PARAMETER).find(code)
+            ?: throw Exception("Can't getting body from method \"$code\"")
+        val nameMatch = Regex(RobotFrameworkRegexp.ATTACHMENT_NAME_PARAMETER).find(code)
 
         val body = bodyMatch.groups.get(RobotFrameworkRegexp.ATTACHMENT_BODY_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(RobotFrameworkRegexp.ATTACHMENT_NAME_PARAMETER_NAME)?.value
@@ -125,11 +125,11 @@ object RobotFrameworkParser {
         return "${RobotFrameworkRegexp.TMS_ADD_ATTACHMENTS}(${body}${RobotFrameworkRegexp.PARAMETERS_SEPARATOR_OBJECT}is_text=True${nameBlock})"
     }
 
-    private fun parseReadAttachMethod(content: String): String
+    private fun parseReadAttachMethod(code: String): String
     {
-        val sourceMatch = Regex(RobotFrameworkRegexp.ATTACHMENT_SOURCE_PARAMETER).find(content)
-            ?: throw Exception("Can't getting source from method \"$content\"")
-        val nameMatch = Regex(RobotFrameworkRegexp.ATTACHMENT_NAME_PARAMETER).find(content)
+        val sourceMatch = Regex(RobotFrameworkRegexp.ATTACHMENT_SOURCE_PARAMETER).find(code)
+            ?: throw Exception("Can't getting source from method \"$code\"")
+        val nameMatch = Regex(RobotFrameworkRegexp.ATTACHMENT_NAME_PARAMETER).find(code)
 
         val source = sourceMatch.groups.get(RobotFrameworkRegexp.ATTACHMENT_SOURCE_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(RobotFrameworkRegexp.ATTACHMENT_NAME_PARAMETER_NAME)?.value
@@ -138,12 +138,12 @@ object RobotFrameworkParser {
         return "${RobotFrameworkRegexp.TMS_ADD_ATTACHMENTS}(${source}${nameBlock})"
     }
 
-    private fun parseParameterMethod(content: String): String
+    private fun parseParameterMethod(code: String): String
     {
-        val nameMatch = Regex(RobotFrameworkRegexp.PARAMETER_NAME_PARAMETER).find(content)
-            ?: throw Exception("Can't getting name from method \"$content\"")
-        val valueMatch = Regex(RobotFrameworkRegexp.PARAMETER_VALUE_PARAMETER).find(content)
-            ?: throw Exception("Can't getting value from method \"$content\"")
+        val nameMatch = Regex(RobotFrameworkRegexp.PARAMETER_NAME_PARAMETER).find(code)
+            ?: throw Exception("Can't getting name from method \"$code\"")
+        val valueMatch = Regex(RobotFrameworkRegexp.PARAMETER_VALUE_PARAMETER).find(code)
+            ?: throw Exception("Can't getting value from method \"$code\"")
 
         val name = nameMatch.groups.get(RobotFrameworkRegexp.PARAMETER_NAME_PARAMETER_NAME)?.value
         val value = valueMatch.groups.get(RobotFrameworkRegexp.PARAMETER_VALUE_PARAMETER_NAME)?.value

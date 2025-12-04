@@ -40,30 +40,30 @@ object JUnitParser {
         return patternActions.keys.toList()
     }
 
-    fun parse(content: String): String
+    fun parse(code: String): String
     {
         for ((pattern, action) in patternActions) {
-            if (pattern.matches(content)) {
+            if (pattern.matches(code)) {
                 return when (action) {
                     is String -> action
                     is Function1<*, *> -> {
                         @Suppress("UNCHECKED_CAST")
                         val function = action as (String) -> String
-                        function(content)
+                        function(code)
                     }
                     // should be never called
                     else -> throw IllegalStateException("Unknown action type in patternActions")
                 }
             }
         }
-        throw Exception("No matching Allure pattern found in line \"$content\"")
+        throw Exception("No matching Allure pattern found in line \"$code\"")
     }
 
-    private fun parseLinkAnnotation(content: String): String
+    private fun parseLinkAnnotation(code: String): String
     {
-        val urlMatch = Regex(JUnitRegexp.LINK_URL_PARAMETER).find(content)
-            ?: throw Exception("Can't getting url from annotation \"$content\"")
-        val nameMatch = Regex(JUnitRegexp.LINK_NAME_PARAMETER).find(content)
+        val urlMatch = Regex(JUnitRegexp.LINK_URL_PARAMETER).find(code)
+            ?: throw Exception("Can't getting url from annotation \"$code\"")
+        val nameMatch = Regex(JUnitRegexp.LINK_NAME_PARAMETER).find(code)
 
         val url = urlMatch.groups.get(JUnitRegexp.LINK_URL_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(JUnitRegexp.LINK_NAME_PARAMETER_NAME)?.value
@@ -72,31 +72,31 @@ object JUnitParser {
         return "${JUnitRegexp.TMS_LINK}(url=${url}${titleBlock})"
     }
 
-    private fun parseTestAnnotation(content: String): String
+    private fun parseTestAnnotation(code: String): String
     {
-        val valueMatch = Regex(JUnitRegexp.VALUE).find(content)
-            ?: throw Exception("Can't getting value from annotation \"$content\"")
+        val valueMatch = Regex(JUnitRegexp.VALUE).find(code)
+            ?: throw Exception("Can't getting value from annotation \"$code\"")
         val value = valueMatch.value
 
         // Use string template for better readability
         return "${JUnitRegexp.JUPITER_TEST}\n${JUnitRegexp.TMS_DISPLAY_NAME}($value)"
     }
 
-    fun parseStepAnnotation(content: String): String
+    fun parseStepAnnotation(code: String): String
     {
-        val valueMatch = Regex(JUnitRegexp.VALUE).find(content)
-            ?: throw Exception("Can't getting value from annotation \"$content\"")
+        val valueMatch = Regex(JUnitRegexp.VALUE).find(code)
+            ?: throw Exception("Can't getting value from annotation \"$code\"")
         val value = valueMatch.value
 
         // Use string template for better readability
         return "${JUnitRegexp.TMS_STEP}\n${JUnitRegexp.TMS_TITLE}($value)"
     }
 
-    private fun parseLinkMethod(content: String): String
+    private fun parseLinkMethod(code: String): String
     {
-        val urlMatch = Regex(JUnitRegexp.LINK_URL_PARAMETER).find(content)
-            ?: throw Exception("Can't getting url from annotation \"$content\"")
-        val nameMatch = Regex(JUnitRegexp.LINK_NAME_PARAMETER).find(content)
+        val urlMatch = Regex(JUnitRegexp.LINK_URL_PARAMETER).find(code)
+            ?: throw Exception("Can't getting url from annotation \"$code\"")
+        val nameMatch = Regex(JUnitRegexp.LINK_NAME_PARAMETER).find(code)
 
         val url = urlMatch.groups.get(JUnitRegexp.LINK_URL_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(JUnitRegexp.LINK_NAME_PARAMETER_NAME)?.value
@@ -105,11 +105,11 @@ object JUnitParser {
         return "${JUnitRegexp.TMS_ADD_LINKS}(url=${url}${titleBlock})"
     }
 
-    private fun parseWriteAttachMethod(content: String): String
+    private fun parseWriteAttachMethod(code: String): String
     {
-        val contentMatch = Regex(JUnitRegexp.ATTACHMENT_CONTENT_PARAMETER).find(content)
-            ?: throw Exception("Can't getting content from method \"$content\"")
-        val nameMatch = Regex(JUnitRegexp.ATTACHMENT_NAME_PARAMETER).find(content)
+        val contentMatch = Regex(JUnitRegexp.ATTACHMENT_CONTENT_PARAMETER).find(code)
+            ?: throw Exception("Can't getting content from method \"$code\"")
+        val nameMatch = Regex(JUnitRegexp.ATTACHMENT_NAME_PARAMETER).find(code)
 
         val content = contentMatch.groups.get(JUnitRegexp.ATTACHMENT_CONTENT_PARAMETER_NAME)?.value
         val name = nameMatch?.groups?.get(JUnitRegexp.ATTACHMENT_NAME_PARAMETER_NAME)?.value
@@ -118,12 +118,12 @@ object JUnitParser {
         return "${JUnitRegexp.TMS_ADD_ATTACHMENTS}(\"$content\"${JUnitRegexp.PARAMETERS_SEPARATOR_OBJECT}is_text=True${nameBlock})"
     }
 
-    private fun parseParameterMethod(content: String): String
+    private fun parseParameterMethod(code: String): String
     {
-        val nameMatch = Regex(JUnitRegexp.PARAMETER_NAME_PARAMETER).find(content)
-            ?: throw Exception("Can't getting name from method \"$content\"")
-        val valueMatch = Regex(JUnitRegexp.PARAMETER_VALUE_PARAMETER).find(content)
-            ?: throw Exception("Can't getting value from method \"$content\"")
+        val nameMatch = Regex(JUnitRegexp.PARAMETER_NAME_PARAMETER).find(code)
+            ?: throw Exception("Can't getting name from method \"$code\"")
+        val valueMatch = Regex(JUnitRegexp.PARAMETER_VALUE_PARAMETER).find(code)
+            ?: throw Exception("Can't getting value from method \"$code\"")
 
         val name = nameMatch.groups.get(JUnitRegexp.PARAMETER_NAME_PARAMETER_NAME)?.value
         val value = valueMatch.groups.get(JUnitRegexp.PARAMETER_VALUE_PARAMETER_NAME)?.value
@@ -132,12 +132,12 @@ object JUnitParser {
         return "${JUnitRegexp.TMS_ADD_PARAMETER}(name=$name${JUnitRegexp.PARAMETERS_SEPARATOR_OBJECT}value=$value)"
     }
 
-    private fun parseLabelMethod(content: String): String
+    private fun parseLabelMethod(code: String): String
     {
-        val nameMatch = Regex(JUnitRegexp.PARAMETER_NAME_PARAMETER).find(content)
-            ?: throw Exception("Can't getting name from method \"$content\"")
-        val valueMatch = Regex(JUnitRegexp.PARAMETER_VALUE_PARAMETER).find(content)
-            ?: throw Exception("Can't getting value from method \"$content\"")
+        val nameMatch = Regex(JUnitRegexp.PARAMETER_NAME_PARAMETER).find(code)
+            ?: throw Exception("Can't getting name from method \"$code\"")
+        val valueMatch = Regex(JUnitRegexp.PARAMETER_VALUE_PARAMETER).find(code)
+            ?: throw Exception("Can't getting value from method \"$code\"")
 
         val name = nameMatch.groups.get(JUnitRegexp.PARAMETER_NAME_PARAMETER_NAME)?.value
         val value = valueMatch.groups.get(JUnitRegexp.PARAMETER_VALUE_PARAMETER_NAME)?.value
