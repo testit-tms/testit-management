@@ -3,7 +3,7 @@
 jsoup = "1.17.2"
 jakarta = "3.0.0"
 slf4j = "2.0.13"
-testit-api = "0.7.9"
+testit-api = "0.9.0"
 
 # plugins
 kotlin = "2.0.0"
