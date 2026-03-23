@@ -5,7 +5,6 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
 import ru.testit.management.enums.FrameworkOption
 import com.intellij.util.PlatformUtils
@@ -47,7 +46,6 @@ class TmsSettingsState : PersistentStateComponent<TmsSettingsState> {
     override fun loadState(state: TmsSettingsState) {
         XmlSerializerUtil.copyBean(state, this)
     }
-
 
     companion object {
         val instance: TmsSettingsState

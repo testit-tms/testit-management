@@ -34,12 +34,14 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
     private val client = TmsClient(_state.url)
     private var _tree: Component? = null
     private var _search: Component? = null
+    private var isFiltersAvailable: Boolean = false
 
     init {
         showActionsToolbar()
     }
 
     fun refresh(project: Project) {
+        isFiltersAvailable = true
         if (_tree != null) {
             remove(_tree)
         }
@@ -55,6 +57,7 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
     }
 
     fun research(project: Project, results: MutableMap<String, List<MatchInfo>>) {
+        isFiltersAvailable = false
         if (_tree != null) {
             remove(_tree)
         }
@@ -136,7 +139,16 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
 
     private fun getTree(project: Project): Component {
         val tree = JXTree(getRootTreeNode(project))
-        tree.cellRenderer = TmsCellStyle()
+        val filterIconMouseListener = RootWithFilterIconMouseListener(
+            tree = tree,
+            isFiltersAvailable = { isFiltersAvailable }
+        )
+        tree.cellRenderer = RootTreeWithFilterCellRenderer(
+            isFiltersAvailable = { isFiltersAvailable },
+            isIconHovered = { filterIconMouseListener.isIconHovered }
+        )
+        tree.addMouseListener(filterIconMouseListener)
+        tree.addMouseMotionListener(filterIconMouseListener)
         tree.addMouseListener(TmsMouseListener(project, tree))
 
         return tree

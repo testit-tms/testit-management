@@ -38,4 +38,23 @@ object StringUtils {
         return snakeToLowerCamelCase(spacesToSnakeCase(str))
     }
 
+    fun textToLong(text: String?): Long? {
+        val trimmed = text?.trim().orEmpty()
+
+        if (trimmed.isEmpty()) return null
+
+        return trimmed.toLongOrNull()
+    }
+
+    fun textToBool(selected: String?): Boolean? {
+        return when (selected) {
+            "True" -> true
+            "False" -> false
+            else -> null
+        }
+    }
+
+    fun cleanForMethodName(str: String): String {
+        return forbiddenCharactersForMethodName.replace(str) { "" }
+    }
 }

@@ -10,6 +10,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService
                 serviceImplementation="ru.testit.management.windows.settings.TmsSettingsState"/>
+        <applicationService
+                serviceImplementation="ru.testit.management.windows.filters.TmsFilterState"/>
         <applicationConfigurable
                 id="ru.testit.management.Settings"
                 parentId="tools"
