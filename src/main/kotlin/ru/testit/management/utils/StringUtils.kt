@@ -6,6 +6,7 @@ object StringUtils {
 
     val camelRegex = "(?<=[a-zA-Z])[A-Z]".toRegex()
     val snakeRegex = "_[a-zA-Z]".toRegex()
+    val forbiddenCharactersForMethodName = "[^a-zA-Z]+".toRegex()
 
     // String extensions
     private fun camelToSnakeCase(str: String): String {
