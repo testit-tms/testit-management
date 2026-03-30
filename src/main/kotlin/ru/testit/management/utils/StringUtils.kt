@@ -5,7 +5,8 @@ import java.util.*
 object StringUtils {
 
     val camelRegex = "(?<=[a-zA-Z])[A-Z]".toRegex()
-    val snakeRegex = "_[a-zA-Z]".toRegex()
+    val snakeRegex = "_[a-zA-Z\\u0400-\\u04FF]".toRegex()
+    val forbiddenCharactersForMethodName = "^[0-9]|[^a-zA-Z0-9_\\u0400-\\u04FF]".toRegex()
 
     // String extensions
     private fun camelToSnakeCase(str: String): String {
@@ -38,4 +39,23 @@ object StringUtils {
         return snakeToLowerCamelCase(spacesToSnakeCase(str))
     }
 
+    fun textToLong(text: String?): Long? {
+        val trimmed = text?.trim().orEmpty()
+
+        if (trimmed.isEmpty()) return null
+
+        return trimmed.toLongOrNull()
+    }
+
+    fun textToBool(selected: String?): Boolean? {
+        return when (selected) {
+            "True" -> true
+            "False" -> false
+            else -> null
+        }
+    }
+
+    fun cleanForMethodName(str: String): String {
+        return forbiddenCharactersForMethodName.replace(str) { "" }
+    }
 }

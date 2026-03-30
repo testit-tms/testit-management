@@ -4,6 +4,8 @@ import kotlinx.serialization.Contextual
 import ru.testit.kotlin.client.apis.*
 import ru.testit.kotlin.client.infrastructure.ApiClient
 import ru.testit.kotlin.client.models.*
+import ru.testit.management.utils.StringUtils
+import ru.testit.management.windows.filters.TmsFilterState
 import ru.testit.management.windows.settings.TmsSettingsState
 import java.util.*
 import java.util.logging.Logger
@@ -25,8 +27,6 @@ class TmsClient(url: String) {
     private val workItemsApi: WorkItemsApi
     @Contextual
     private val projectSectionsApi: ProjectSectionsApi
-
-
 
     init {
         testRunsApi = TestRunsApi(url)
@@ -85,13 +85,23 @@ class TmsClient(url: String) {
         return workItemsApi.getWorkItemById(id.toString(), null, null)
     }
 
-    fun getWorkItemsBySectionId(sectionId: UUID?): Iterable<WorkItemShortApiResult> {
-
+    fun getWorkItemsBySectionId(sectionId: UUID): Iterable<WorkItemShortApiResult> {
         if (sectionId == null) {
             return listOf()
         }
 
-        val filter = WorkItemFilterApiModel(sectionIds = setOf(sectionId), isDeleted = false)
+        val nameFilter = TmsFilterState.instance.testCaseName?.trim()
+        val globalIdFilter = TmsFilterState.instance.testCaseGlobalId?.let { setOf(it) }
+        val automationFilter = StringUtils.textToBool(TmsFilterState.instance.isAutomation)
+
+        val filter = WorkItemFilterApiModel(
+            sectionIds = setOf(sectionId),
+            isDeleted = false,
+            name = nameFilter,
+            globalIds = globalIdFilter,
+            isAutomated = automationFilter
+        )
+
         val request = WorkItemSelectApiModel(filter = filter)
         try {
             val workItemsList = workItemsApi.apiV2WorkItemsSearchPost(

@@ -32,10 +32,12 @@ object XUnitSnippet {
         val builder = StringBuilder()
 
         val testName = getTestName(model)
+        val testMethodName = StringUtils.cleanForMethodName(
+            StringUtils.spacesToCamelCase(testName))
         CODE_SNIPPET.lines().forEach { line ->
             var modifiedLine = line
                 .replace("testName",
-                    StringUtils.spacesToCamelCase(testName))
+                    testMethodName)
                 .replace("globalId", model.globalId.toString())
                 .replace("title_", testName)
                 .replace("displayName_", testName)

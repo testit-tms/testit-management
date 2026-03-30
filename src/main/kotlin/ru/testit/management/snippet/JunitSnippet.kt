@@ -28,10 +28,13 @@ object JunitSnippet {
         val model = userObject as TmsNodeModel
         val builder = StringBuilder()
 
+        val testName = getTestName(model)
+        val testMethodName = StringUtils.cleanForMethodName(
+            StringUtils.spacesToCamelCase(testName))
         CODE_SNIPPET.lines().forEach { line ->
             var modifiedLine = line
                 .replace("testName",
-                    StringUtils.spacesToCamelCase(getTestName(model)))
+                    testMethodName)
                 .replace("globalId", model.globalId.toString())
 
             modifiedLine = tryUpdateLineWithSteps(modifiedLine, model)

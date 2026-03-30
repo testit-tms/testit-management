@@ -31,10 +31,12 @@ object PytestOrNoseSnippet {
         val builder = StringBuilder()
 
         val testName = getTestName(model)
+        val testMethodName = StringUtils.cleanForMethodName(
+            StringUtils.spacesToSnakeCase(testName).lowercase())
         CODE_SNIPPET.lines().forEach { line ->
             var modifiedLine = line
                 .replace("testName",
-                    StringUtils.spacesToSnakeCase(testName).lowercase())
+                    testMethodName)
                 .replace("globalId", model.globalId.toString())
                 .replace("title_", testName)
                 .replace("displayName_", testName)

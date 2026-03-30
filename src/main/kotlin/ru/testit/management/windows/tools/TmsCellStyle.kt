@@ -8,7 +8,7 @@ import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeCellRenderer
 
-class TmsCellStyle : DefaultTreeCellRenderer() {
+open class TmsCellStyle : DefaultTreeCellRenderer() {
     init {
         setBorderSelectionColor(null)
         setBackgroundSelectionColor(null)

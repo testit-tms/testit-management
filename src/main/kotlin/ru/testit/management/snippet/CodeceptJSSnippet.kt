@@ -2,7 +2,6 @@ package ru.testit.management.snippet
 
 import ru.testit.management.utils.CodeSnippetUtils.getTestName
 import ru.testit.management.utils.CodeSnippetUtils.tryUpdateLineWithSteps
-import ru.testit.management.utils.StringUtils
 import ru.testit.management.windows.tools.TmsNodeModel
 
 object CodeceptJSSnippet {

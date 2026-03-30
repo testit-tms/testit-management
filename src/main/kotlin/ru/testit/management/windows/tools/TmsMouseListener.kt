@@ -18,6 +18,9 @@ class TmsMouseListener(project: Project, tree: JTree) : MouseListener {
     }
 
     override fun mousePressed(event: MouseEvent) {
+        if (event.isConsumed) {
+            return
+        }
         val row = _tree.getClosestRowForLocation(event.x, event.y)
         _tree.setSelectionRow(row)
 
@@ -29,6 +32,9 @@ class TmsMouseListener(project: Project, tree: JTree) : MouseListener {
     }
 
     override fun mouseReleased(event: MouseEvent) {
+        if (event.isConsumed) {
+            return
+        }
         if (event.isPopupTrigger) {
             showPopup(event)
         }
