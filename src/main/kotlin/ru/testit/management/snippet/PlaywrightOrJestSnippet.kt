@@ -23,7 +23,9 @@ object PlaywrightOrJestSnippet {
     });
     """
 
-    val comparator = { globalId: Long  -> "testit.workItemIds([\"$globalId\"]);" }
+    val comparator = { globalId: Long ->
+        Regex("""testit\.workItemIds\s*\(\s*\[[^]]*["']$globalId["']""")
+    }
 
 
     fun getNewSnippetPlaywrightOrJest(userObject: Any): String {

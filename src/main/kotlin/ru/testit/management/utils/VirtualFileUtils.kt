@@ -64,7 +64,7 @@ object VirtualFileUtils {
     private fun findTestByGlobalId(lines: MutableList<String>, globalId: Long): Int? {
         val line: Int?
         for (counter in lines.indices) {
-            if (lines[counter].contains(CodeSnippetUtils.getComparator()(globalId))) {
+            if (CodeSnippetUtils.getComparator()(globalId).containsMatchIn(lines[counter])) {
                 line = counter
                 return line
             }

@@ -23,7 +23,9 @@ object TestCafeSnippet {
     });
     """
 
-    val comparator = { globalId: Long  -> "workItemIds: ['$globalId']," }
+    val comparator = { globalId: Long ->
+        Regex("""workItemIds\s*:\s*\[[^]]*['"]$globalId['"]""")
+    }
 
 
     fun getNewSnippetTestCafe(userObject: Any): String {

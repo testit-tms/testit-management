@@ -41,7 +41,7 @@ object CodeSnippetUtils {
         }
     }
 
-    fun getComparator(): (Long) -> String {
+    fun getComparator(): (Long) -> Regex {
         val framework: String? = TmsSettingsState.instance.getFramework()
         return when (framework) {
             FrameworkOption.BEHAVE.toString() -> GherkinSnippet.comparator

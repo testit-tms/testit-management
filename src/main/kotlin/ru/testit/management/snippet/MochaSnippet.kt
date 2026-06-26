@@ -23,7 +23,9 @@ object MochaSnippet {
     });
     """
 
-    val comparator = { globalId: Long  -> "this.workItemsIds = [\"$globalId\"];" }
+    val comparator = { globalId: Long ->
+        Regex("""workItemsIds\s*=\s*\[[^]]*["']$globalId["']""")
+    }
 
 
     fun getNewSnippetMocha(userObject: Any): String {
