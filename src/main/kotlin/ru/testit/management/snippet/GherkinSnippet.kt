@@ -22,7 +22,9 @@ object GherkinSnippet {
         #   postconditions
     """
 
-    val comparator = { globalId: Long  -> "@WorkItemIds=$globalId" }
+    val comparator = { globalId: Long ->
+        Regex("""@WorkItemIds\s*=\s*[^#\s]*\b$globalId\b""")
+    }
 
 
     fun getNewSnippetCucumberOrBehaveOrSpecFlow(userObject: Any): String {
@@ -47,5 +49,9 @@ object GherkinSnippet {
         }
 
         return builder.toString().trimIndent()
+    }
+
+    fun getWorkItemIdsAnnotation() {
+
     }
 }

@@ -23,7 +23,9 @@ object PytestOrNoseSnippet {
     
     """
 
-    val comparator = { globalId: Long  -> "@testit.workItemIds(\"$globalId\")" }
+    val comparator = { globalId: Long ->
+        Regex("""@testit\.workItemIds\s*\([^)]*["']$globalId["']""")
+    }
 
 
     fun getNewSnippetPytestOrNose(userObject: Any): String {

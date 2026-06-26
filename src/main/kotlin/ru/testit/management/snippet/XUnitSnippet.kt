@@ -24,8 +24,9 @@ object XUnitSnippet {
     }
     """
 
-    val comparator = { globalId: Long  -> "[WorkItemIds(\"$globalId\")]" }
-
+    val comparator = { globalId: Long ->
+        Regex("""\[WorkItemIds\s*\([^)]*["']$globalId["']""")
+    }
 
     fun getNewSnippetXUnit(userObject: Any): String {
         val model = userObject as TmsNodeModel

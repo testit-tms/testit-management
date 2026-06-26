@@ -21,7 +21,9 @@ object JunitSnippet {
     """
 
 
-    val comparator = { globalId: Long  -> "@WorkItemIds(\"$globalId\")" }
+    val comparator = { globalId: Long ->
+        Regex("""@WorkItemIds\s*\([^)]*["']$globalId["']""")
+    }
 
 
     fun getNewSnippetJunit(userObject: Any): String {

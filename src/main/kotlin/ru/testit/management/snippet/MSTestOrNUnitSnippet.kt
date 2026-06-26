@@ -25,7 +25,9 @@ object MSTestOrNUnitSnippet {
     }
     """
 
-    val comparator = { globalId: Long  -> "[WorkItemIds(\"$globalId\")]" }
+    val comparator = { globalId: Long ->
+        Regex("""\[WorkItemIds\s*\([^)]*["']$globalId["']""")
+    }
 
 
     fun getNewSnippetMSTestOrNUnit(userObject: Any): String {

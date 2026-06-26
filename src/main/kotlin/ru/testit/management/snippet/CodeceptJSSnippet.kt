@@ -25,7 +25,9 @@ object CodeceptJSSnippet {
     });
     """
 
-    val comparator = { globalId: Long  -> "workitemIds: ['$globalId']" }
+    val comparator = { globalId: Long ->
+        Regex("""workitemIds\s*:\s*\[[^]]*['"]$globalId['"]""")
+    }
 
 
     fun getNewSnippetCodeceptJS(userObject: Any): String {

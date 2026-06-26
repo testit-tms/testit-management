@@ -22,7 +22,9 @@ object RobotFrameworkSnippet {
         #   postconditions
     """
 
-    val comparator = { globalId: Long  -> "testit.workitemsID:$globalId" }
+    val comparator = { globalId: Long ->
+        Regex("""testit\.workitemsID\s*:\s*[^#\s]*\b$globalId\b""")
+    }
 
 
     fun getNewSnippetRobotFramework(userObject: Any): String {
