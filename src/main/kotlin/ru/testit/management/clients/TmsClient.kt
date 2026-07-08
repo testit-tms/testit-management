@@ -81,7 +81,7 @@ class TmsClient(url: String) {
         return sections
     }
 
-    fun getWorkItemById(id: UUID): WorkItemModel {
+    fun getWorkItemById(id: UUID): WorkItemApiResult {
         return workItemsApi.getWorkItemById(id.toString(), null, null)
     }
 

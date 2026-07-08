@@ -2,7 +2,7 @@ package ru.testit.management.windows.tools
 
 import com.intellij.openapi.vfs.VirtualFile
 import ru.testit.kotlin.client.models.StepModel
-import ru.testit.kotlin.client.models.WorkItemEntityTypes
+import ru.testit.kotlin.client.models.WorkItemEntityTypeApiModel
 import java.util.*
 
 class TmsNodeModel(
@@ -11,7 +11,7 @@ class TmsNodeModel(
     var preconditions: Iterable<StepModel>? = null,
     var steps: Iterable<StepModel>? = null,
     var postconditions: Iterable<StepModel>? = null,
-    var entityTypeName: WorkItemEntityTypes? = null,
+    var entityTypeName: WorkItemEntityTypeApiModel? = null,
     var isAutomated: Boolean = false,
     var id: UUID? = null,
     var file: VirtualFile? = null,

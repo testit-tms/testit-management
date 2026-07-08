@@ -1,6 +1,6 @@
 package ru.testit.management.windows.tools
 
-import ru.testit.kotlin.client.models.WorkItemEntityTypes
+import ru.testit.kotlin.client.models.WorkItemEntityTypeApiModel
 import ru.testit.management.icons.TmsIcons
 import java.awt.Component
 import javax.swing.Icon
@@ -52,11 +52,11 @@ open class TmsCellStyle : DefaultTreeCellRenderer() {
 
     private fun setWorkItemIcon(model: TmsNodeModel) {
         when (model.entityTypeName) {
-            WorkItemEntityTypes.CheckLists -> {
+            WorkItemEntityTypeApiModel.CheckLists -> {
                 this.icon = getCheckListIcon(model.isAutomated)
             }
 
-            WorkItemEntityTypes.SharedSteps -> {
+            WorkItemEntityTypeApiModel.SharedSteps -> {
                 this.icon = getSharedStepIcon(model.isAutomated)
             }
 

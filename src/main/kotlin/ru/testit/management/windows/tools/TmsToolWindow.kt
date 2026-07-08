@@ -10,7 +10,7 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import org.jdesktop.swingx.JXTree
 import ru.testit.kotlin.client.models.SectionModel
-import ru.testit.kotlin.client.models.WorkItemEntityTypes
+import ru.testit.kotlin.client.models.WorkItemEntityTypeApiModel
 import ru.testit.management.clients.TmsClient
 import ru.testit.management.windows.differs.FileDiffWindow
 import ru.testit.management.parsers.models.MatchInfo
@@ -223,7 +223,7 @@ class TmsToolWindow private constructor() : SimpleToolWindowPanel(true, true) {
                 null,
                 null,
                 null,
-                WorkItemEntityTypes.valueOf(workItem.entityTypeName),
+                WorkItemEntityTypeApiModel.valueOf(workItem.entityTypeName),
                 workItem.isAutomated,
                 workItem.id
             )
