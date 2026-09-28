@@ -57,8 +57,9 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(libs.jsoup)
     implementation(libs.slf4j)
-    implementation(libs.testit.api)
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(libs.okhttp)
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
     testImplementation(kotlin("test"))
 }
 
