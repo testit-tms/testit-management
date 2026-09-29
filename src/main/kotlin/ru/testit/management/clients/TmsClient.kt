@@ -1,9 +1,15 @@
 package ru.testit.management.clients
 
 import kotlinx.serialization.Contextual
-import ru.testit.kotlin.client.apis.*
-import ru.testit.kotlin.client.infrastructure.ApiClient
-import ru.testit.kotlin.client.models.*
+import ru.testit.kotlin.adaptersapi.apis.ProjectSectionsApi
+import ru.testit.kotlin.adaptersapi.apis.ProjectsApi
+import ru.testit.kotlin.adaptersapi.apis.WorkItemsApi
+import ru.testit.kotlin.adaptersapi.infrastructure.ApiClient
+import ru.testit.kotlin.adaptersapi.models.SectionModel
+import ru.testit.kotlin.adaptersapi.models.WorkItemApiResult
+import ru.testit.kotlin.adaptersapi.models.WorkItemFilterApiModel
+import ru.testit.kotlin.adaptersapi.models.WorkItemSelectApiModel
+import ru.testit.kotlin.adaptersapi.models.WorkItemShortApiResult
 import ru.testit.management.utils.StringUtils
 import ru.testit.management.windows.filters.TmsFilterState
 import ru.testit.management.windows.settings.TmsSettingsState
@@ -14,14 +20,6 @@ import java.util.logging.Logger
 class TmsClient(url: String) {
     private val _logger = Logger.getLogger(TmsClient::class.java.simpleName)
     @Contextual
-    private val testRunsApi: TestRunsApi
-    @Contextual
-    private val autoTestsApi: AutoTestsApi
-    @Contextual
-    private val attachmentsApi: AttachmentsApi
-    @Contextual
-    private val testResultsApi: TestResultsApi
-    @Contextual
     private val projectsApi: ProjectsApi
     @Contextual
     private val workItemsApi: WorkItemsApi
@@ -29,14 +27,6 @@ class TmsClient(url: String) {
     private val projectSectionsApi: ProjectSectionsApi
 
     init {
-        testRunsApi = TestRunsApi(url)
-        init(testRunsApi)
-        autoTestsApi = AutoTestsApi(url)
-        init(autoTestsApi)
-        attachmentsApi = AttachmentsApi(url)
-        init(attachmentsApi)
-        testResultsApi = TestResultsApi(url)
-        init(testResultsApi)
         projectsApi = ProjectsApi(url)
         init(projectsApi)
         workItemsApi = WorkItemsApi(url)
@@ -57,7 +47,7 @@ class TmsClient(url: String) {
             if (projectsApi.apiKey["Authorization"].isNullOrEmpty()) {
                 projectsApi.apiKey["Authorization"] = privateToken
             }
-            projectsApi.getProjectById(projectId)
+            projectsApi.adaptersProjectsIdGet(UUID.fromString(projectId))
 
             return null
         } catch (exception: Throwable) {
@@ -70,8 +60,8 @@ class TmsClient(url: String) {
 
         try {
             sections.addAll(
-                projectSectionsApi.getSectionsByProjectId(
-                    projectId = TmsSettingsState.instance.projectId,
+                projectSectionsApi.adaptersProjectsProjectIdSectionsGet(
+                    projectId = UUID.fromString(TmsSettingsState.instance.projectId),
                 )
             )
         } catch (exception: Throwable) {
@@ -81,15 +71,11 @@ class TmsClient(url: String) {
         return sections
     }
 
-    fun getWorkItemById(id: UUID): WorkItemModel {
-        return workItemsApi.getWorkItemById(id.toString(), null, null)
+    fun getWorkItemById(id: UUID): WorkItemApiResult {
+        return workItemsApi.adaptersWorkItemsIdGet(id.toString())
     }
 
     fun getWorkItemsBySectionId(sectionId: UUID): Iterable<WorkItemShortApiResult> {
-        if (sectionId == null) {
-            return listOf()
-        }
-
         val nameFilter = TmsFilterState.instance.testCaseName?.trim()
         val globalIdFilter = TmsFilterState.instance.testCaseGlobalId?.let { setOf(it) }
         val automationFilter = StringUtils.textToBool(TmsFilterState.instance.isAutomation)
@@ -104,11 +90,9 @@ class TmsClient(url: String) {
 
         val request = WorkItemSelectApiModel(filter = filter)
         try {
-            val workItemsList = workItemsApi.apiV2WorkItemsSearchPost(
+            return workItemsApi.adaptersWorkItemsSearchPost(
                 workItemSelectApiModel = request
             )
-
-            return workItemsList
         } catch (exception: Throwable) {
             _logger.severe { exception.message }
         }

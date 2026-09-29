@@ -2,7 +2,7 @@ package ru.testit.management
 
 import kotlinx.collections.immutable.persistentSetOf
 import org.junit.jupiter.api.DisplayName
-import ru.testit.kotlin.client.models.StepModel
+import ru.testit.kotlin.adaptersapi.models.StepModel
 import ru.testit.management.snippet.JunitSnippet
 import ru.testit.management.utils.CodeSnippetUtils
 import ru.testit.management.windows.tools.TmsNodeModel
