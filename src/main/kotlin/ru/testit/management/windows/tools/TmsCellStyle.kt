@@ -1,6 +1,6 @@
 package ru.testit.management.windows.tools
 
-import ru.testit.kotlin.client.models.WorkItemEntityTypeApiModel
+import ru.testit.kotlin.adaptersapi.models.WorkItemEntityTypeApiModel
 import ru.testit.management.icons.TmsIcons
 import java.awt.Component
 import javax.swing.Icon

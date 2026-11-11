@@ -9,8 +9,8 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import org.jdesktop.swingx.JXTree
-import ru.testit.kotlin.client.models.SectionModel
-import ru.testit.kotlin.client.models.WorkItemEntityTypeApiModel
+import ru.testit.kotlin.adaptersapi.models.SectionModel
+import ru.testit.kotlin.adaptersapi.models.WorkItemEntityTypeApiModel
 import ru.testit.management.clients.TmsClient
 import ru.testit.management.windows.differs.FileDiffWindow
 import ru.testit.management.parsers.models.MatchInfo
